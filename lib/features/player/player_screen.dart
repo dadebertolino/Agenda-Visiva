@@ -43,8 +43,10 @@ class PlayerScreen extends ConsumerWidget {
                     : items.isEmpty
                         ? const Center(child: Text('Agenda vuota'))
                         : agenda.type == AgendaType.firstThen
-                            ? _FirstThenView(items: items, currentIndex: currentIndex)
-                            : _DailyView(items: items, currentIndex: currentIndex),
+                            ? _FirstThenView(
+                                items: items, currentIndex: currentIndex)
+                            : _DailyView(
+                                items: items, currentIndex: currentIndex),
               ),
             ],
           ),
@@ -71,9 +73,15 @@ class _TopBar extends StatelessWidget {
                 overflow: TextOverflow.ellipsis),
           ),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Tieni premuto il lucchetto per uscire'),
+                  duration: Duration(seconds: 2)),
+            ),
             onLongPress: () => _showAdultGate(context),
             child: const Padding(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.all(14),
               child: Icon(Icons.lock_outline, size: 20, color: Colors.grey),
             ),
           ),
@@ -107,8 +115,8 @@ class _TopBar extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext,
-                int.tryParse(controller.text) == a * b),
+            onPressed: () => Navigator.pop(
+                dialogContext, int.tryParse(controller.text) == a * b),
             child: const Text('Conferma'),
           ),
         ],
@@ -168,8 +176,7 @@ class _DailyView extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Poi: ',
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Text('Poi: ', style: Theme.of(context).textTheme.titleMedium),
                   PictogramThumb(
                     type: next.activity.pictogramType,
                     pictogramRef: next.activity.pictogramRef,
@@ -369,11 +376,9 @@ class _EndView extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.star_rounded,
-              size: 140, color: Colors.amber.shade400),
+          Icon(Icons.star_rounded, size: 140, color: Colors.amber.shade400),
           const SizedBox(height: 16),
-          Text('Hai finito!',
-              style: Theme.of(context).textTheme.headlineLarge),
+          Text('Hai finito!', style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 32),
           FilledButton.tonal(
             style: FilledButton.styleFrom(
