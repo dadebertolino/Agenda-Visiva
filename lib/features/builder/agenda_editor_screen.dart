@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/builtin_icons.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
+import '../pictogram_picker/pictogram_picker.dart';
 import '../player/player_screen.dart';
 import 'providers.dart';
 
@@ -86,7 +86,7 @@ class AgendaEditorScreen extends ConsumerWidget {
                     minimumSize: const Size.fromHeight(48)),
                 icon: const Icon(Icons.add),
                 label: const Text('Aggiungi attività'),
-                onPressed: () => _showAddSheet(context, ref),
+                onPressed: () => _addActivity(context, ref),
               ),
             ),
           ),
@@ -95,67 +95,40 @@ class AgendaEditorScreen extends ConsumerWidget {
     );
   }
 
-  /// Placeholder del picker: builtin + label. Il picker ARASAAC completo
-  /// è la prossima feature; l'architettura non cambia.
-  Future<void> _showAddSheet(BuildContext context, WidgetRef ref) async {
-    final controller = TextEditingController();
-    String selectedIcon = builtinIcons.keys.first;
+  /// Flusso: picker (ARASAAC/base) -> label prefilled -> crea e aggiungi.
+  Future<void> _addActivity(BuildContext context, WidgetRef ref) async {
+    final selection = await showPictogramPicker(context);
+    if (selection == null || !context.mounted) return;
 
-    await showModalBottomSheet<void>(
+    final controller = TextEditingController(text: selection.suggestedLabel);
+    final label = await showDialog<String>(
       context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (context, setState) => Padding(
-          padding: EdgeInsets.only(
-            left: 16, right: 16, top: 16,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: controller,
-                autofocus: true,
-                decoration: const InputDecoration(
-                    labelText: 'Nome attività', hintText: 'Es. Colazione'),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: builtinIcons.entries
-                    .map((e) => ChoiceChip(
-                          avatar: Icon(e.value, size: 18),
-                          label: Text(e.key),
-                          selected: selectedIcon == e.key,
-                          onSelected: (_) =>
-                              setState(() => selectedIcon = e.key),
-                        ))
-                    .toList(),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () async {
-                  final label = controller.text.trim();
-                  if (label.isEmpty) return;
-                  final activityId =
-                      await ref.read(activityRepoProvider).create(
-                            label: label,
-                            type: PictogramType.builtin,
-                            pictogramRef: selectedIcon,
-                          );
-                  await ref.read(agendaRepoProvider).addItem(
-                      agendaId: agendaId, activityId: activityId);
-                  if (sheetContext.mounted) Navigator.pop(sheetContext);
-                },
-                child: const Text('Aggiungi'),
-              ),
-            ],
-          ),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Nome attività'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          onSubmitted: (v) => Navigator.pop(dialogContext, v.trim()),
         ),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, controller.text.trim()),
+            child: const Text('Aggiungi'),
+          ),
+        ],
       ),
     );
+    if (label == null || label.isEmpty) return;
+
+    final activityId = await ref.read(activityRepoProvider).create(
+          label: label,
+          type: selection.type,
+          pictogramRef: selection.ref,
+        );
+    await ref
+        .read(agendaRepoProvider)
+        .addItem(agendaId: agendaId, activityId: activityId);
   }
 }
 
