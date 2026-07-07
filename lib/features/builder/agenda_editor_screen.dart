@@ -7,6 +7,7 @@ import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
+import '../player/player_screen.dart';
 import 'providers.dart';
 
 /// Editor agenda (modalità adulto). Criterio: routine completa in <2 minuti.
@@ -33,8 +34,9 @@ class AgendaEditorScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.play_arrow),
             tooltip: 'Anteprima come bambino',
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Player in arrivo nel prossimo blocco')),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => PlayerScreen(agendaId: agendaId)),
             ),
           ),
         ],

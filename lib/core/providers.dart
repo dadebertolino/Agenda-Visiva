@@ -4,6 +4,7 @@ import '../data/db/database.dart';
 import '../data/repositories/activity_repo.dart';
 import '../data/repositories/agenda_repo.dart';
 import '../data/services/arasaac_api.dart';
+import '../data/services/tts_service.dart';
 
 /// Il DB vive come provider root: i repository lo ricevono da qui.
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -20,3 +21,5 @@ final activityRepoProvider =
 
 final arasaacApiProvider =
     Provider<ArasaacApi>((ref) => ArasaacApi(ref.watch(databaseProvider)));
+
+final ttsProvider = Provider<TtsService>((ref) => TtsService());
