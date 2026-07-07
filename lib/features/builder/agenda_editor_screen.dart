@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:printing/printing.dart';
 
 import '../../core/providers.dart';
 import '../../core/widgets/pictogram_thumb.dart';
@@ -31,6 +32,11 @@ class AgendaEditorScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(agenda.title),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.print_outlined),
+            tooltip: 'Stampa / PDF',
+            onPressed: () => _openExportSheet(context, ref),
+          ),
           IconButton(
             icon: const Icon(Icons.play_arrow),
             tooltip: 'Anteprima come bambino',
@@ -93,6 +99,64 @@ class AgendaEditorScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _openExportSheet(BuildContext context, WidgetRef ref) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(
+            leading: const Icon(Icons.print),
+            title: const Text('Stampa'),
+            subtitle: const Text('Ottimizzato per ritaglio e laminazione'),
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _exportPdf(context, ref, share: false);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.ios_share),
+            title: const Text('Condividi PDF'),
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _exportPdf(context, ref, share: true);
+            },
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Future<void> _exportPdf(BuildContext context, WidgetRef ref,
+      {required bool share}) async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+        const SnackBar(content: Text('Preparo il PDF…')));
+    try {
+      final repo = ref.read(agendaRepoProvider);
+      final agenda = await repo.watchAgenda(agendaId).first;
+      final rows = await repo.watchItems(agendaId).first;
+      if (agenda == null || rows.isEmpty) {
+        messenger.showSnackBar(const SnackBar(
+            content: Text("Aggiungi almeno un'attività prima di esportare")));
+        return;
+      }
+      final service = await ref.read(pdfExportProvider.future);
+      final bytes = await service.buildAgendaPdf(agenda: agenda, rows: rows);
+      messenger.hideCurrentSnackBar();
+
+      final filename =
+          '${agenda.title.replaceAll(RegExp(r"[^\w\s-]"), "")}.pdf';
+      if (share) {
+        await Printing.sharePdf(bytes: bytes, filename: filename);
+      } else {
+        await Printing.layoutPdf(onLayout: (_) async => bytes);
+      }
+    } catch (e) {
+      messenger.showSnackBar(
+          SnackBar(content: Text('Export non riuscito: $e')));
+    }
   }
 
   /// Flusso: picker (ARASAAC/base) -> label prefilled -> crea e aggiungi.

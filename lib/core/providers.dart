@@ -8,6 +8,7 @@ import '../data/repositories/activity_repo.dart';
 import '../data/repositories/agenda_repo.dart';
 import '../data/services/arasaac_api.dart';
 import '../data/services/media_store.dart';
+import '../data/services/pdf_export.dart';
 import '../data/services/tts_service.dart';
 
 /// Il DB vive come provider root: i repository lo ricevono da qui.
@@ -41,4 +42,9 @@ final photoFileProvider = FutureProvider.family<File?, String>(
     (ref, assetId) async {
   final store = await ref.watch(mediaStoreProvider.future);
   return store.fileFor(assetId);
+});
+
+final pdfExportProvider = FutureProvider<PdfExportService>((ref) async {
+  final media = await ref.watch(mediaStoreProvider.future);
+  return PdfExportService(ref.watch(arasaacApiProvider), media);
 });
