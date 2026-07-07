@@ -15,4 +15,6 @@ abstract final class K {
   static const Duration adultGateLongPress = Duration(seconds: 3);
 
   static const String schemaVersionExport = '1';
+
+  static const String appVersion = '0.1.0';
 }

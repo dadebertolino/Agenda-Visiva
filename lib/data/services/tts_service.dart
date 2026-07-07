@@ -6,13 +6,28 @@ class TtsService {
   final FlutterTts _tts = FlutterTts();
   bool _configured = false;
 
+  Future<void> _configure() async {
+    // iOS: categoria playback = suona anche con interruttore silenzioso,
+    // istanza condivisa per non farsi silenziare da altre app.
+    try {
+      await _tts.setSharedInstance(true);
+      await _tts.setIosAudioCategory(
+        IosTextToSpeechAudioCategory.playback,
+        [IosTextToSpeechAudioCategoryOptions.duckOthers],
+      );
+    } catch (_) {
+      // Android o piattaforma senza queste API: ok così.
+    }
+    await _tts.setLanguage('it-IT');
+    await _tts.setSpeechRate(0.45);
+    await _tts.setVolume(1.0);
+    await _tts.setPitch(1.0);
+    _configured = true;
+  }
+
   Future<void> speak(String text) async {
     try {
-      if (!_configured) {
-        await _tts.setLanguage('it-IT');
-        await _tts.setSpeechRate(0.45);
-        _configured = true;
-      }
+      if (!_configured) await _configure();
       await _tts.stop();
       await _tts.speak(text);
     } catch (_) {

@@ -21,6 +21,39 @@ class ProfileRepo {
     return id;
   }
 
+  Future<void> rename(String id, String displayName) =>
+      (_db.update(_db.profiles)..where((t) => t.id.equals(id))).write(
+        ProfilesCompanion(
+          displayName: Value(displayName),
+          updatedAt: Value(DateTime.now().toUtc()),
+          dirty: const Value(true),
+        ),
+      ).then((_) {});
+
+  Stream<Profile?> watchById(String id) =>
+      (_db.select(_db.profiles)..where((t) => t.id.equals(id)))
+          .watchSingleOrNull();
+
+  /// JSON impostazioni del profilo proprietario di un'agenda (per il player).
+  Stream<String?> watchSettingsJsonForAgenda(String agendaId) {
+    final query = _db.select(_db.agendas).join([
+      innerJoin(_db.profiles, _db.profiles.id.equalsExp(_db.agendas.profileId)),
+    ])
+      ..where(_db.agendas.id.equals(agendaId));
+    return query
+        .watchSingleOrNull()
+        .map((row) => row?.readTable(_db.profiles).settings);
+  }
+
+  Future<void> updateSettings(String id, String settingsJson) =>
+      (_db.update(_db.profiles)..where((t) => t.id.equals(id))).write(
+        ProfilesCompanion(
+          settings: Value(settingsJson),
+          updatedAt: Value(DateTime.now().toUtc()),
+          dirty: const Value(true),
+        ),
+      ).then((_) {});
+
   Future<void> softDelete(String id) =>
       (_db.update(_db.profiles)..where((t) => t.id.equals(id))).write(
         ProfilesCompanion(

@@ -9,6 +9,7 @@ import '../../core/providers.dart';
 import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
+import '../../domain/profile_settings.dart';
 import '../builder/providers.dart';
 
 /// Modalità bambino: full-screen, un solo elemento dominante,
@@ -31,7 +32,7 @@ class PlayerScreen extends ConsumerWidget {
     final done = currentIndex == -1 && items.isNotEmpty;
 
     return PopScope(
-      canPop: false,
+      canPop: true,
       child: Scaffold(
         body: SafeArea(
           child: Column(
@@ -43,10 +44,8 @@ class PlayerScreen extends ConsumerWidget {
                     : items.isEmpty
                         ? const Center(child: Text('Agenda vuota'))
                         : agenda.type == AgendaType.firstThen
-                            ? _FirstThenView(
-                                items: items, currentIndex: currentIndex)
-                            : _DailyView(
-                                items: items, currentIndex: currentIndex),
+                            ? _FirstThenView(items: items, currentIndex: currentIndex)
+                            : _DailyView(items: items, currentIndex: currentIndex),
               ),
             ],
           ),
@@ -56,7 +55,8 @@ class PlayerScreen extends ConsumerWidget {
   }
 }
 
-/// Barra minima: titolo + lucchetto gate. Long-press → domanda aritmetica.
+/// Barra minima: indietro + titolo. Decisione dal testing: niente gate,
+/// da rivalidare col pilota (versione col calcolo nella storia git).
 class _TopBar extends StatelessWidget {
   const _TopBar({required this.title});
   final String title;
@@ -64,65 +64,23 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            tooltip: 'Torna indietro',
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          const SizedBox(width: 4),
           Expanded(
             child: Text(title,
                 style: Theme.of(context).textTheme.titleMedium,
                 overflow: TextOverflow.ellipsis),
           ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Tieni premuto il lucchetto per uscire'),
-                  duration: Duration(seconds: 2)),
-            ),
-            onLongPress: () => _showAdultGate(context),
-            child: const Padding(
-              padding: EdgeInsets.all(14),
-              child: Icon(Icons.lock_outline, size: 20, color: Colors.grey),
-            ),
-          ),
         ],
       ),
     );
-  }
-
-  Future<void> _showAdultGate(BuildContext context) async {
-    final rnd = Random();
-    final a = 3 + rnd.nextInt(7);
-    final b = 3 + rnd.nextInt(7);
-    final controller = TextEditingController();
-
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Solo per adulti'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Quanto fa $a × $b?'),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              onSubmitted: (v) =>
-                  Navigator.pop(dialogContext, int.tryParse(v) == a * b),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(
-                dialogContext, int.tryParse(controller.text) == a * b),
-            child: const Text('Conferma'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true && context.mounted) Navigator.pop(context);
   }
 }
 
@@ -176,7 +134,8 @@ class _DailyView extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Poi: ', style: Theme.of(context).textTheme.titleMedium),
+                  Text('Poi: ',
+                      style: Theme.of(context).textTheme.titleMedium),
                   PictogramThumb(
                     type: next.activity.pictogramType,
                     pictogramRef: next.activity.pictogramRef,
@@ -250,16 +209,22 @@ class _CurrentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = compact ? 140.0 : 200.0;
+    final settings =
+        ref.watch(agendaSettingsProvider(row.item.agendaId)).valueOrNull ??
+            const ProfileSettings();
+    final size = (compact ? 140.0 : 200.0) * settings.cardScale;
     final timer = row.item.timerSeconds;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-          onTap: () => ref
-              .read(ttsProvider)
-              .speak(row.activity.ttsText ?? row.activity.label),
+          onTap: () {
+            if (!settings.tts) return;
+            ref
+                .read(ttsProvider)
+                .speak(row.activity.ttsText ?? row.activity.label);
+          },
           child: PictogramThumb(
             type: row.activity.pictogramType,
             pictogramRef: row.activity.pictogramRef,
@@ -376,9 +341,11 @@ class _EndView extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.star_rounded, size: 140, color: Colors.amber.shade400),
+          Icon(Icons.star_rounded,
+              size: 140, color: Colors.amber.shade400),
           const SizedBox(height: 16),
-          Text('Hai finito!', style: Theme.of(context).textTheme.headlineLarge),
+          Text('Hai finito!',
+              style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 32),
           FilledButton.tonal(
             style: FilledButton.styleFrom(

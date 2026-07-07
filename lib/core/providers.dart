@@ -7,10 +7,12 @@ import '../data/db/database.dart';
 import '../data/repositories/activity_repo.dart';
 import '../data/repositories/agenda_repo.dart';
 import '../data/repositories/profile_repo.dart';
+import '../data/services/agviz_service.dart';
 import '../data/services/arasaac_api.dart';
 import '../data/services/media_store.dart';
 import '../data/services/pdf_export.dart';
 import '../data/services/tts_service.dart';
+import '../domain/profile_settings.dart';
 
 /// Il DB vive come provider root: i repository lo ricevono da qui.
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -52,3 +54,15 @@ final pdfExportProvider = FutureProvider<PdfExportService>((ref) async {
   final media = await ref.watch(mediaStoreProvider.future);
   return PdfExportService(ref.watch(arasaacApiProvider), media);
 });
+
+final agvizProvider = FutureProvider<AgvizService>((ref) async {
+  final dir = await ref.watch(documentsDirProvider.future);
+  return AgvizService(ref.watch(databaseProvider), dir);
+});
+
+/// Impostazioni del profilo a cui appartiene un'agenda (usato dal player).
+final agendaSettingsProvider =
+    StreamProvider.family<ProfileSettings, String>((ref, agendaId) => ref
+        .watch(profileRepoProvider)
+        .watchSettingsJsonForAgenda(agendaId)
+        .map(ProfileSettings.fromJsonString));

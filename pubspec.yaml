@@ -25,6 +25,7 @@ dependencies:
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
   uuid: ^4.5.0
+  crypto: ^3.0.5
 
   # Navigazione
   go_router: ^14.2.0
@@ -41,6 +42,7 @@ dependencies:
   qr_flutter: ^4.1.0
   archive: ^3.6.1
   share_plus: ^10.0.0
+  file_picker: ^8.1.2
 
   # Accessibilità
   flutter_tts: ^4.0.2
@@ -54,8 +56,26 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.8.0
   riverpod_generator: ^2.4.3
+  flutter_native_splash: ^2.4.1
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true
   assets:
     - assets/pictograms/builtin/
+    - assets/branding/
+
+flutter_native_splash:
+  color: "#00897B"
+  image: assets/branding/splash_icon.png
+  android_12:
+    color: "#00897B"
+    image: assets/branding/splash_icon.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/icon_fullbleed.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#00897B"
+  adaptive_icon_foreground: assets/branding/icon_adaptive_fg.png
