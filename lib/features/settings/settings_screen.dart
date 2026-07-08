@@ -107,9 +107,9 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const ListTile(
-            leading: const Icon(Icons.person_outline),
-            title: const Text('Autore'),
-            subtitle: const Text('Made by Prof. Davide Bertolino\n'
+            leading: Icon(Icons.person_outline),
+            title: Text('Autore'),
+            subtitle: Text('Made by Prof. Davide Bertolino\n'
                 'Per contatti: info@davidebertolino.it'),
             isThreeLine: true,
           ),
