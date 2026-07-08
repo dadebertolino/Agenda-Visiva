@@ -1,9 +1,11 @@
 # Agenda Visiva
 
-**Agende visive per bambini autistici e con svantaggio linguistico.**
+**Agende visive e comunicazione dei bisogni per bambini autistici e con svantaggio linguistico.**
 Codice pubblico e gratuito per sempre. Uso commerciale vietato ([PolyForm Noncommercial 1.0.0](LICENSE.md)).
 
-*Visual schedules for autistic children and children with language difficulties, built for Italian schools and families. Free forever, source-available, commercial use prohibited. Offline-first: children's names and photos never leave the device.*
+*Visual schedules and a basic AAC needs board for autistic children and children with language difficulties, built for Italian schools and families. Free forever, source-available, commercial use prohibited. Offline-first: children's names and photos never leave the device.*
+
+Pagina del progetto: [davidebertolino.it/agenda-visiva/](https://davidebertolino.it/agenda-visiva/) · Privacy: [davidebertolino.it/privacy-policy-agenda-visiva/](https://davidebertolino.it/privacy-policy-agenda-visiva/)
 
 ## Perché
 
@@ -21,9 +23,14 @@ Le agende visive (TEACCH, CAA) riducono l'ansia da transizione e aumentano l'aut
 - **Editor agenda** drag & drop: tre tipi (Giornata, Prima–Poi, Sequenza), timer visivo per attività, riuso rapido delle attività recenti
 - **Pittogrammi**: ricerca ARASAAC in italiano (cache offline), foto personali, set base incluso
 - **Modalità bambino**: full-screen, card grandi (dimensione regolabile), avanzamento con check-off, timer analogico ad anello, lettura vocale (TTS it-IT), schermata di rinforzo a fine agenda
+- **Tavola "I miei bisogni"**: griglia di comunicazione CAA — il bambino tocca l'immagine (Acqua, Bagno, Aiuto...), il dispositivo pronuncia la parola; modificabile dall'adulto, raggiungibile anche durante la routine
 - **Profili multipli** con impostazioni individuali (voce, contrasto, dimensione pittogrammi)
-- **Export PDF** ottimizzato per ritaglio e laminazione + stampa diretta
+- **Export PDF** con 1, 2 o 4 pittogrammi per pagina, ottimizzato per ritaglio e laminazione + stampa diretta
 - **Condivisione casa↔scuola senza server**: formato `.agviz` (export/import idempotente via file)
+
+## Piattaforme
+
+iOS e Android da un unico codebase Flutter. Nota Android: il permesso `INTERNET` in `AndroidManifest.xml` serve esclusivamente ai pittogrammi ARASAAC (unica comunicazione di rete dell'app).
 
 ## Setup sviluppo
 
@@ -37,32 +44,36 @@ flutter test
 flutter run
 ```
 
-Per iOS: aprire `ios/Runner.xcworkspace` e impostare il team di firma.
+Per iOS: aprire `ios/Runner.xcworkspace` e impostare il team di firma. Per Android release: `flutter build apk --release` (o `appbundle` per il Play Store, con keystore proprio).
 
 ## Architettura
 
-Feature-first, offline-first, sync-ready (UUID client-side, tombstone, campo `dirty` su ogni tabella: la futura sync E2E non richiederà migrazioni).
+Feature-first, offline-first, sync-ready (UUID client-side, tombstone, campo `dirty` su ogni tabella: la futura sync E2E non richiederà migrazioni). Database drift con migrazioni versionate (attuale: v2).
 
 ```
 lib/
   core/          costanti, provider root, widget condivisi
   data/
     db/          drift (SQLite): tabelle, migrazioni
-    repositories/  Profile, Agenda, Activity — le feature dipendono da qui, mai da drift
+    repositories/  Profile, Agenda, Activity, Board — le feature dipendono da qui, mai da drift
     services/    arasaac_api, media_store, pdf_export, agviz, tts
   domain/        modelli puri (ProfileSettings, ...)
-  features/      profiles, builder, player, pictogram_picker, settings
+  features/      profiles, builder, player, pictogram_picker, comunicazione, settings
 ```
 
-Stack: Riverpod 2, drift, go_router, pdf/printing, flutter_tts. Dettagli e razionali in `docs/`.
+Stack: Riverpod 2, drift, pdf/printing, flutter_tts. Dettagli e razionali in `docs/`.
 
 ## Roadmap
 
-- [x] MVP completo (editor, player, ARASAAC, foto, PDF, .agviz, impostazioni)
-- [ ] Pilota in classe (infanzia) e iterazione col feedback
+- [x] MVP completo (editor, player, ARASAAC, foto, PDF parametrico, .agviz, impostazioni, tavola bisogni)
+- [ ] Pilota in una sezione di scuola dell'infanzia (in partenza) e iterazione col feedback
+- [ ] Pubblicazione App Store (in corso) e Play Store
 - [ ] Suoni di conferma e rifinitura accessibilità (alto contrasto)
-- [ ] Pubblicazione App Store / Play Store
 - [ ] Fase 2: sync casa-scuola con crittografia end-to-end (il server vedrà solo blob cifrati) — DPIA pubblica in questo repo
+
+## Feedback
+
+Sei un insegnante, genitore, educatore o terapista? Il tuo parere orienta la roadmap: apri una [Issue](../../issues) o scrivi a info@davidebertolino.it.
 
 ## Crediti e licenze
 
