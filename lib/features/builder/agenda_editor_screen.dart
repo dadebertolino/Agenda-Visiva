@@ -102,34 +102,55 @@ class AgendaEditorScreen extends ConsumerWidget {
   }
 
   Future<void> _openExportSheet(BuildContext context, WidgetRef ref) async {
+    var perPage = 4;
     await showModalBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(
-            leading: const Icon(Icons.print),
-            title: const Text('Stampa'),
-            subtitle: const Text('Ottimizzato per ritaglio e laminazione'),
-            onTap: () {
-              Navigator.pop(sheetContext);
-              _exportPdf(context, ref, share: false);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.ios_share),
-            title: const Text('Condividi PDF'),
-            onTap: () {
-              Navigator.pop(sheetContext);
-              _exportPdf(context, ref, share: true);
-            },
-          ),
-        ]),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setState) => SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: Row(
+                children: [
+                  const Expanded(child: Text('Pittogrammi per pagina')),
+                  SegmentedButton<int>(
+                    segments: const [
+                      ButtonSegment(value: 1, label: Text('1')),
+                      ButtonSegment(value: 2, label: Text('2')),
+                      ButtonSegment(value: 4, label: Text('4')),
+                    ],
+                    selected: {perPage},
+                    onSelectionChanged: (s) =>
+                        setState(() => perPage = s.first),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.print),
+              title: const Text('Stampa'),
+              subtitle: const Text('Ottimizzato per ritaglio e laminazione'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _exportPdf(context, ref, share: false, perPage: perPage);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.ios_share),
+              title: const Text('Condividi PDF'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _exportPdf(context, ref, share: true, perPage: perPage);
+              },
+            ),
+          ]),
+        ),
       ),
     );
   }
 
   Future<void> _exportPdf(BuildContext context, WidgetRef ref,
-      {required bool share}) async {
+      {required bool share, int perPage = 4}) async {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
         const SnackBar(content: Text('Preparo il PDF…')));
@@ -143,7 +164,8 @@ class AgendaEditorScreen extends ConsumerWidget {
         return;
       }
       final service = await ref.read(pdfExportProvider.future);
-      final bytes = await service.buildAgendaPdf(agenda: agenda, rows: rows);
+      final bytes = await service.buildAgendaPdf(
+          agenda: agenda, rows: rows, perPage: perPage);
       messenger.hideCurrentSnackBar();
 
       final filename =

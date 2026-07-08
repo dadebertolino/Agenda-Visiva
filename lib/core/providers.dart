@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import '../data/db/database.dart';
 import '../data/repositories/activity_repo.dart';
 import '../data/repositories/agenda_repo.dart';
+import '../data/repositories/board_repo.dart';
 import '../data/repositories/profile_repo.dart';
 import '../data/services/agviz_service.dart';
 import '../data/services/arasaac_api.dart';
@@ -26,6 +27,9 @@ final agendaRepoProvider =
 
 final activityRepoProvider =
     Provider<ActivityRepo>((ref) => ActivityRepo(ref.watch(databaseProvider)));
+
+final boardRepoProvider =
+    Provider<BoardRepo>((ref) => BoardRepo(ref.watch(databaseProvider)));
 
 final profileRepoProvider =
     Provider<ProfileRepo>((ref) => ProfileRepo(ref.watch(databaseProvider)));

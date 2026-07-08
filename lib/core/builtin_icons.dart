@@ -15,4 +15,9 @@ const builtinIcons = <String, IconData>{
   'scuola': Icons.school,
   'riposo': Icons.bedtime,
   'denti': Icons.brush,
+  'acqua': Icons.water_drop,
+  'aiuto': Icons.front_hand,
+  'pausa': Icons.pause_circle_filled,
+  'fame': Icons.restaurant,
+  'dolore': Icons.healing,
 };

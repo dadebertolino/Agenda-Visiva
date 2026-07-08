@@ -9,6 +9,7 @@ import '../../core/providers.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
 import '../builder/agenda_editor_screen.dart';
+import '../comunicazione/bisogni_screen.dart';
 import '../settings/settings_screen.dart';
 import '../player/player_screen.dart';
 
@@ -221,37 +222,63 @@ class ProfileAgendasScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: agendas.isEmpty
-          ? const Center(
-              child: Text('Nessuna agenda. Creane una con +',
-                  style: TextStyle(color: Colors.grey)))
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                for (final a in agendas)
-                  Card(
-                    child: ListTile(
-                      title: Text(a.title),
-                      subtitle: Text(_typeLabels[a.type] ?? ''),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.play_circle_fill, size: 32),
-                        tooltip: 'Avvia per il bambino',
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (_) =>
-                                  PlayerScreen(agendaId: a.id)),
-                        ),
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                AgendaEditorScreen(agendaId: a.id)),
-                      ),
-                      onLongPress: () => _agendaOptions(context, ref, a),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Card(
+            color: Theme.of(context).colorScheme.secondaryContainer,
+            child: ListTile(
+              leading: const Icon(Icons.record_voice_over),
+              title: const Text('I miei bisogni'),
+              subtitle: const Text('Tocca un\'immagine, la voce parla'),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: 'Modifica la tavola',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          BisogniEditScreen(profileId: profile.id)),
+                ),
+              ),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (_) => BisogniScreen(profileId: profile.id)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (agendas.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(32),
+              child: Center(
+                child: Text('Nessuna agenda. Creane una con +',
+                    style: TextStyle(color: Colors.grey)),
+              ),
+            )
+          else
+            for (final a in agendas)
+              Card(
+                child: ListTile(
+                  title: Text(a.title),
+                  subtitle: Text(_typeLabels[a.type] ?? ''),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.play_circle_fill, size: 32),
+                    tooltip: 'Avvia per il bambino',
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (_) => PlayerScreen(agendaId: a.id)),
                     ),
                   ),
-              ],
-            ),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            AgendaEditorScreen(agendaId: a.id)),
+                  ),
+                  onLongPress: () => _agendaOptions(context, ref, a),
+                ),
+              ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         label: const Text('Nuova agenda'),

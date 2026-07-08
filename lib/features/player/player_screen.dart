@@ -11,6 +11,7 @@ import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
 import '../../domain/profile_settings.dart';
 import '../builder/providers.dart';
+import '../comunicazione/bisogni_screen.dart';
 
 /// Modalità bambino: full-screen, un solo elemento dominante,
 /// back bloccato, uscita solo via gate adulto.
@@ -37,7 +38,7 @@ class PlayerScreen extends ConsumerWidget {
         body: SafeArea(
           child: Column(
             children: [
-              _TopBar(title: agenda.title),
+              _TopBar(title: agenda.title, profileId: agenda.profileId),
               Expanded(
                 child: done
                     ? _EndView(agendaId: agendaId)
@@ -58,8 +59,9 @@ class PlayerScreen extends ConsumerWidget {
 /// Barra minima: indietro + titolo. Decisione dal testing: niente gate,
 /// da rivalidare col pilota (versione col calcolo nella storia git).
 class _TopBar extends StatelessWidget {
-  const _TopBar({required this.title});
+  const _TopBar({required this.title, required this.profileId});
   final String title;
+  final String profileId;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +79,14 @@ class _TopBar extends StatelessWidget {
             child: Text(title,
                 style: Theme.of(context).textTheme.titleMedium,
                 overflow: TextOverflow.ellipsis),
+          ),
+          IconButton(
+            icon: const Icon(Icons.record_voice_over),
+            tooltip: 'I miei bisogni',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => BisogniScreen(profileId: profileId)),
+            ),
           ),
         ],
       ),

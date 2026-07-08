@@ -19,10 +19,17 @@ class PdfExportService {
   final ArasaacApi _arasaac;
   final MediaStore _media;
 
+  /// [perPage]: 1, 2 o 4 pittogrammi per pagina A4.
   Future<Uint8List> buildAgendaPdf({
     required Agenda agenda,
     required List<EditorRow> rows,
+    int perPage = 4,
   }) async {
+    final (cardW, cardH, labelSize) = switch (perPage) {
+      1 => (505.0, 655.0, 34.0),
+      2 => (505.0, 320.0, 24.0),
+      _ => (244.0, 320.0, 20.0),
+    };
     final images = <String, pw.MemoryImage?>{};
     for (final row in rows) {
       images[row.item.id] = await _loadImage(row);
@@ -55,7 +62,8 @@ class PdfExportService {
             runSpacing: 16,
             children: [
               for (var i = 0; i < rows.length; i++)
-                _card(i, rows[i], images[rows[i].item.id]),
+                _card(i, rows[i], images[rows[i].item.id],
+                    cardW, cardH, labelSize),
             ],
           ),
         ],
@@ -64,10 +72,11 @@ class PdfExportService {
     return doc.save();
   }
 
-  pw.Widget _card(int index, EditorRow row, pw.MemoryImage? image) {
+  pw.Widget _card(int index, EditorRow row, pw.MemoryImage? image,
+      double width, double height, double labelSize) {
     return pw.Container(
-      width: 245,
-      height: 275,
+      width: width,
+      height: height,
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
         border: pw.Border.all(
@@ -95,7 +104,8 @@ class PdfExportService {
         pw.SizedBox(height: 8),
         pw.Text(
           row.activity.label,
-          style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+          style:
+              pw.TextStyle(fontSize: labelSize, fontWeight: pw.FontWeight.bold),
           textAlign: pw.TextAlign.center,
           maxLines: 2,
         ),

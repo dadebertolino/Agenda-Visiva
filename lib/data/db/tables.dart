@@ -61,6 +61,14 @@ class AgendaItems extends Table with SyncableTable {
   DateTimeColumn get completedAt => dateTime().nullable()();
 }
 
+/// Tavola di comunicazione "I miei bisogni" (per profilo).
+/// Riusa Activity: un bisogno = pittogramma + label + ttsText.
+class BoardItems extends Table with SyncableTable {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get activityId => text().references(Activities, #id)();
+  IntColumn get position => integer()();
+}
+
 /// Foto caricate dall'utente. File su disco, EXIF/GPS rimossi all'import.
 class MediaAssets extends Table with SyncableTable {
   /// personal — path relativo a documents dir: media/<uuid>.jpg
