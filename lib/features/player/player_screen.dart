@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +9,9 @@ import '../../core/constants.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/tables.dart';
+import '../../data/db/database.dart';
 import '../../data/repositories/agenda_repo.dart';
+import '../../domain/item_badge.dart';
 import '../../domain/profile_settings.dart';
 import '../builder/providers.dart';
 import '../comunicazione/bisogni_screen.dart';
@@ -45,8 +48,10 @@ class PlayerScreen extends ConsumerWidget {
                     : items.isEmpty
                         ? const Center(child: Text('Agenda vuota'))
                         : agenda.type == AgendaType.firstThen
-                            ? _FirstThenView(items: items, currentIndex: currentIndex)
-                            : _DailyView(items: items, currentIndex: currentIndex),
+                            ? _FirstThenView(
+                                items: items, currentIndex: currentIndex)
+                            : _DailyView(
+                                items: items, currentIndex: currentIndex),
               ),
             ],
           ),
@@ -103,36 +108,53 @@ class _DailyView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final completed = items.take(currentIndex).toList();
+    final settings = ref
+            .watch(agendaSettingsProvider(items.first.item.agendaId))
+            .valueOrNull ??
+        const ProfileSettings();
     final current = items[currentIndex];
     final next =
         currentIndex + 1 < items.length ? items[currentIndex + 1] : null;
 
+    // 'remaining' (default): la striscia mostra cosa resta da fare e si
+    // svuota al check-off — TEACCH: l'attività finita si toglie.
+    // 'history': comportamento precedente, le completate si accumulano.
+    final history = settings.timelineMode == 'history';
+    final strip = history
+        ? items.take(currentIndex).toList()
+        : items.skip(currentIndex).toList();
+
     return Column(
       children: [
-        if (completed.isNotEmpty)
+        if (strip.isNotEmpty)
           SizedBox(
             height: 56,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: completed.length,
+              itemCount: strip.length,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, i) => Opacity(
-                opacity: 0.5,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    PictogramThumb(
-                      type: completed[i].activity.pictogramType,
-                      pictogramRef: completed[i].activity.pictogramRef,
-                      size: 44,
-                    ),
-                    const Icon(Icons.check_circle,
-                        color: Colors.green, size: 20),
-                  ],
-                ),
-              ),
+              itemBuilder: (context, i) {
+                final row = strip[i];
+                final isCurrent = !history && i == 0;
+                return AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: history ? 0.5 : (isCurrent ? 1.0 : 0.6),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      PictogramThumb(
+                        type: row.activity.pictogramType,
+                        pictogramRef: row.activity.pictogramRef,
+                        size: isCurrent ? 52 : 44,
+                      ),
+                      if (history)
+                        const Icon(Icons.check_circle,
+                            color: Colors.green, size: 20),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         Expanded(child: Center(child: _CurrentCard(row: current))),
@@ -144,7 +166,7 @@ class _DailyView extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Poi: ',
+                  Text('Dopo: ',
                       style: Theme.of(context).textTheme.titleMedium),
                   PictogramThumb(
                     type: next.activity.pictogramType,
@@ -181,7 +203,9 @@ class _FirstThenView extends ConsumerWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Prima', style: Theme.of(context).textTheme.headlineSmall),
+            // "Adesso/Dopo" invece di "Prima/Poi": deitticamente ancorato
+            // al presente del bambino, niente etichetta che "migra".
+            Text('Adesso', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             _CurrentCard(row: current, compact: true),
           ],
@@ -192,7 +216,7 @@ class _FirstThenView extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Poi', style: Theme.of(context).textTheme.headlineSmall),
+                Text('Dopo', style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 12),
                 PictogramThumb(
                   type: next.activity.pictogramType,
@@ -244,22 +268,32 @@ class _CurrentCard extends ConsumerWidget {
         const SizedBox(height: 16),
         Text(row.activity.label,
             style: Theme.of(context).textTheme.headlineMedium),
+        if (settings.showTimes &&
+            (row.item.startTime != null || row.item.endTime != null)) ...[
+          const SizedBox(height: 4),
+          Text(
+            [row.item.startTime, row.item.endTime]
+                .whereType<String>()
+                .join(' – '),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ],
+        if (settings.showBadges) ...[
+          _BadgeRow(item: row.item),
+        ],
         const SizedBox(height: 16),
         if (timer != null) ...[
-          _TimerRing(key: ValueKey(row.item.id), seconds: timer),
+          settings.timerStyle == 'circular'
+              ? _TimerRing(key: ValueKey(row.item.id), seconds: timer)
+              : _TimerBar(key: ValueKey(row.item.id), seconds: timer),
           const SizedBox(height: 16),
         ],
-        FilledButton.icon(
-          style: FilledButton.styleFrom(
-            minimumSize: Size(compact ? 140 : 200, K.childMinTouchTarget),
-            textStyle: const TextStyle(fontSize: 20),
-          ),
-          icon: const Icon(Icons.check, size: 28),
-          label: const Text('Fatto'),
-          onPressed: () {
-            HapticFeedback.mediumImpact();
-            ref.read(agendaRepoProvider).completeItem(row.item.id);
-          },
+        _DoneButton(
+          key: ValueKey('done-${row.item.id}'),
+          width: compact ? 140 : 200,
+          onCompleted: () =>
+              ref.read(agendaRepoProvider).completeItem(row.item.id),
         ),
       ],
     );
@@ -340,6 +374,149 @@ class _RingPainter extends CustomPainter {
   bool shouldRepaint(_RingPainter old) => old.fraction != fraction;
 }
 
+/// Barra che si RIEMPIE col passare del tempo (feedback pilota: il
+/// riempimento è percepito come progresso verso il "fatto", coerente
+/// col pulsante verde). Default; l'anello resta come opzione.
+class _TimerBar extends StatefulWidget {
+  const _TimerBar({super.key, required this.seconds});
+  final int seconds;
+
+  @override
+  State<_TimerBar> createState() => _TimerBarState();
+}
+
+class _TimerBarState extends State<_TimerBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: Duration(seconds: widget.seconds),
+  )..forward();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) => ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 220,
+          height: 16,
+          child: LinearProgressIndicator(
+            value: _controller.value,
+            backgroundColor: scheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation(scheme.tertiary),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pulsante Fatto: al tap diventa verde con check pieno, breve pausa di
+/// rinforzo, poi completa davvero. Non sovrastimolante: solo colore,
+/// niente animazioni complesse.
+class _DoneButton extends StatefulWidget {
+  const _DoneButton(
+      {super.key, required this.width, required this.onCompleted});
+  final double width;
+  final VoidCallback onCompleted;
+
+  @override
+  State<_DoneButton> createState() => _DoneButtonState();
+}
+
+class _DoneButtonState extends State<_DoneButton> {
+  bool _pressed = false;
+
+  Future<void> _handleTap() async {
+    if (_pressed) return;
+    setState(() => _pressed = true);
+    //HapticFeedback.mediumImpact();
+    unawaited(HapticFeedback.mediumImpact());
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (mounted) widget.onCompleted();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      style: FilledButton.styleFrom(
+        minimumSize: Size(widget.width, K.childMinTouchTarget),
+        textStyle: const TextStyle(fontSize: 20),
+        backgroundColor: _pressed ? Colors.green.shade600 : null,
+      ),
+      icon: Icon(_pressed ? Icons.check_circle : Icons.check, size: 28),
+      label: Text(_pressed ? 'Fatto!' : 'Fatto'),
+      onPressed: _handleTap,
+    );
+  }
+}
+
+/// Dove/con chi sotto la card corrente: max 2 chip discreti, visibili
+/// solo se showBadges attivo — chi non li usa non vede nulla.
+class _BadgeRow extends StatelessWidget {
+  const _BadgeRow({required this.item});
+  final AgendaItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final place = ItemBadge.fromJsonString(item.placeJson);
+    final companion = ItemBadge.fromJsonString(item.companionJson);
+    if (place == null && companion == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (place != null) _badge(context, Icons.place_outlined, place),
+          if (place != null && companion != null) const SizedBox(width: 12),
+          if (companion != null)
+            _badge(context, Icons.person_outline, companion),
+        ],
+      ),
+    );
+  }
+
+  Widget _badge(BuildContext context, IconData icon, ItemBadge badge) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          badge.ref != null
+              ? PictogramThumb(
+                  type: badge.type == 'photo'
+                      ? PictogramType.photo
+                      : PictogramType.arasaac,
+                  pictogramRef: badge.ref!,
+                  size: 28,
+                )
+              : Icon(icon, size: 20, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Text(badge.label,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant)),
+        ],
+      ),
+    );
+  }
+}
+
 /// Fine agenda: rinforzo visivo semplice, non sovrastimolante.
 class _EndView extends ConsumerWidget {
   const _EndView({required this.agendaId});
@@ -351,11 +528,9 @@ class _EndView extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.star_rounded,
-              size: 140, color: Colors.amber.shade400),
+          Icon(Icons.star_rounded, size: 140, color: Colors.amber.shade400),
           const SizedBox(height: 16),
-          Text('Hai finito!',
-              style: Theme.of(context).textTheme.headlineLarge),
+          Text('Hai finito!', style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 32),
           FilledButton.tonal(
             style: FilledButton.styleFrom(

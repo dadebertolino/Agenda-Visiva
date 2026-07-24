@@ -7,6 +7,7 @@ import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
+import '../../domain/item_badge.dart';
 import '../pictogram_picker/pictogram_picker.dart';
 import '../player/player_screen.dart';
 import 'providers.dart';
@@ -103,6 +104,7 @@ class AgendaEditorScreen extends ConsumerWidget {
 
   Future<void> _openExportSheet(BuildContext context, WidgetRef ref) async {
     var perPage = 4;
+    var layout = 'grid'; // 'grid' | 'list'
     await showModalBottomSheet<void>(
       context: context,
       builder: (sheetContext) => StatefulBuilder(
@@ -112,27 +114,48 @@ class AgendaEditorScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
               child: Row(
                 children: [
-                  const Expanded(child: Text('Pittogrammi per pagina')),
-                  SegmentedButton<int>(
+                  const Expanded(child: Text('Formato')),
+                  SegmentedButton<String>(
                     segments: const [
-                      ButtonSegment(value: 1, label: Text('1')),
-                      ButtonSegment(value: 2, label: Text('2')),
-                      ButtonSegment(value: 4, label: Text('4')),
+                      ButtonSegment(value: 'grid', label: Text('Griglia')),
+                      ButtonSegment(value: 'list', label: Text('Elenco')),
                     ],
-                    selected: {perPage},
+                    selected: {layout},
                     onSelectionChanged: (s) =>
-                        setState(() => perPage = s.first),
+                        setState(() => layout = s.first),
                   ),
                 ],
               ),
             ),
+            if (layout == 'grid')
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: Row(
+                  children: [
+                    const Expanded(child: Text('Pittogrammi per pagina')),
+                    SegmentedButton<int>(
+                      segments: const [
+                        ButtonSegment(value: 1, label: Text('1')),
+                        ButtonSegment(value: 2, label: Text('2')),
+                        ButtonSegment(value: 4, label: Text('4')),
+                      ],
+                      selected: {perPage},
+                      onSelectionChanged: (s) =>
+                          setState(() => perPage = s.first),
+                    ),
+                  ],
+                ),
+              ),
             ListTile(
               leading: const Icon(Icons.print),
               title: const Text('Stampa'),
-              subtitle: const Text('Ottimizzato per ritaglio e laminazione'),
+              subtitle: Text(layout == 'grid'
+                  ? 'Ottimizzato per ritaglio e laminazione'
+                  : 'Elenco della giornata con orari e caselle'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                _exportPdf(context, ref, share: false, perPage: perPage);
+                _exportPdf(context, ref,
+                    share: false, perPage: perPage, layout: layout);
               },
             ),
             ListTile(
@@ -140,7 +163,8 @@ class AgendaEditorScreen extends ConsumerWidget {
               title: const Text('Condividi PDF'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                _exportPdf(context, ref, share: true, perPage: perPage);
+                _exportPdf(context, ref,
+                    share: true, perPage: perPage, layout: layout);
               },
             ),
           ]),
@@ -150,7 +174,7 @@ class AgendaEditorScreen extends ConsumerWidget {
   }
 
   Future<void> _exportPdf(BuildContext context, WidgetRef ref,
-      {required bool share, int perPage = 4}) async {
+      {required bool share, int perPage = 4, String layout = 'grid'}) async {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
         const SnackBar(content: Text('Preparo il PDF…')));
@@ -164,8 +188,10 @@ class AgendaEditorScreen extends ConsumerWidget {
         return;
       }
       final service = await ref.read(pdfExportProvider.future);
-      final bytes = await service.buildAgendaPdf(
-          agenda: agenda, rows: rows, perPage: perPage);
+      final bytes = layout == 'list'
+          ? await service.buildAgendaListPdf(agenda: agenda, rows: rows)
+          : await service.buildAgendaPdf(
+              agenda: agenda, rows: rows, perPage: perPage);
       messenger.hideCurrentSnackBar();
 
       final filename =
@@ -228,10 +254,22 @@ class _ItemRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.read(agendaRepoProvider);
     final timer = row.item.timerSeconds;
+    final times = switch ((row.item.startTime, row.item.endTime)) {
+      (null, null) => null,
+      (final s, null) => s,
+      (null, final e) => '– $e',
+      (final s, final e) => '$s – $e',
+    };
+    final subtitle = [
+      if (times != null) times,
+      if (timer != null) 'Timer: ${timer ~/ 60} min',
+    ].join('   ');
 
     return ListTile(
       key: key,
-      onLongPress: () => _pickTimer(context, repo),
+      // Il menu è raggiungibile sia col tap sull'icona ⋮ (scopribile)
+      // sia col long-press (scorciatoia per chi la conosce).
+      onLongPress: () => _showItemOptions(context, repo),
       leading: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -247,11 +285,206 @@ class _ItemRow extends ConsumerWidget {
         ],
       ),
       title: Text(row.activity.label),
-      subtitle: timer != null ? Text('Timer: ${timer ~/ 60} min') : null,
+      subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
       trailing: IconButton(
-        icon: const Icon(Icons.delete_outline),
-        onPressed: () => repo.removeItem(row.item.id),
+        icon: const Icon(Icons.more_vert),
+        tooltip: 'Opzioni attività',
+        onPressed: () => _showItemOptions(context, repo),
       ),
+    );
+  }
+
+  /// Menu opzioni item: sostituisce il long-press diretto sul timer
+  /// ora che le opzioni per-item sono più di una.
+  Future<void> _showItemOptions(BuildContext context, AgendaRepo repo) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.hourglass_bottom),
+              title: const Text('Timer visivo'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickTimer(context, repo);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.schedule),
+              title: const Text('Orario inizio e fine'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickTimes(context, repo);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.place_outlined),
+              title: const Text('Dove e con chi'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickBadges(context, repo);
+              },
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: Icon(Icons.delete_outline,
+                  color: Theme.of(context).colorScheme.error),
+              title: Text('Rimuovi dall\'agenda',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.error)),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                repo.removeItem(row.item.id);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickTimes(BuildContext context, AgendaRepo repo) async {
+    TimeOfDay? parse(String? hhmm) {
+      if (hhmm == null) return null;
+      final parts = hhmm.split(':');
+      return TimeOfDay(
+          hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }
+
+    String fmt(TimeOfDay t) =>
+        '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+    if (!context.mounted) return;
+    final start = await showTimePicker(
+      context: context,
+      helpText: 'Orario di inizio (Annulla = nessuno)',
+      initialTime: parse(row.item.startTime) ?? TimeOfDay.now(),
+    );
+    if (!context.mounted) return;
+    final end = await showTimePicker(
+      context: context,
+      helpText: 'Orario di fine (Annulla = nessuno)',
+      initialTime: parse(row.item.endTime) ??
+          start ??
+          TimeOfDay.now(),
+    );
+    await repo.setItemTimes(
+      row.item.id,
+      startTime: start != null ? fmt(start) : null,
+      endTime: end != null ? fmt(end) : null,
+    );
+  }
+
+  /// Dialog dove/con chi: testo libero + pittogramma opzionale dal picker.
+  /// Campo vuoto = badge rimosso.
+  Future<void> _pickBadges(BuildContext context, AgendaRepo repo) async {
+    var place = ItemBadge.fromJsonString(row.item.placeJson);
+    var companion = ItemBadge.fromJsonString(row.item.companionJson);
+    final placeCtrl = TextEditingController(text: place?.label ?? '');
+    final companionCtrl = TextEditingController(text: companion?.label ?? '');
+
+    final save = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Dove e con chi'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _badgeField(
+                context: context,
+                icon: Icons.place_outlined,
+                hint: 'Dove (es. Palestra)',
+                controller: placeCtrl,
+                badge: place,
+                onPictogram: (b) => setState(() => place = b),
+              ),
+              const SizedBox(height: 12),
+              _badgeField(
+                context: context,
+                icon: Icons.person_outline,
+                hint: 'Con chi (es. Maria)',
+                controller: companionCtrl,
+                badge: companion,
+                onPictogram: (b) => setState(() => companion = b),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Annulla'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Salva'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (save != true) return;
+
+    ItemBadge? build(ItemBadge? picked, String text) {
+      final label = text.trim();
+      if (label.isEmpty) return null;
+      // Il pittogramma scelto resta valido anche se il testo è cambiato.
+      return ItemBadge(
+          type: picked?.type ?? 'text', ref: picked?.ref, label: label);
+    }
+
+    await repo.setItemBadges(
+      row.item.id,
+      placeJson: build(place, placeCtrl.text)?.toJsonString(),
+      companionJson: build(companion, companionCtrl.text)?.toJsonString(),
+    );
+  }
+
+  Widget _badgeField({
+    required BuildContext context,
+    required IconData icon,
+    required String hint,
+    required TextEditingController controller,
+    required ItemBadge? badge,
+    required ValueChanged<ItemBadge?> onPictogram,
+  }) {
+    return Row(
+      children: [
+        badge != null && badge.ref != null
+            ? PictogramThumb(
+                type: badge.type == 'photo'
+                    ? PictogramType.photo
+                    : PictogramType.arasaac,
+                pictogramRef: badge.ref!,
+                size: 36,
+              )
+            : Icon(icon, size: 36, color: Colors.grey),
+        const SizedBox(width: 8),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(hintText: hint),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.image_search),
+          tooltip: 'Scegli pittogramma',
+          onPressed: () async {
+            final sel = await showPictogramPicker(context);
+            if (sel == null) return;
+            if (controller.text.trim().isEmpty) {
+              controller.text = sel.suggestedLabel;
+            }
+            onPictogram(ItemBadge(
+              type: sel.type == PictogramType.photo ? 'photo' : 'arasaac',
+              ref: sel.ref,
+              label: sel.suggestedLabel,
+            ));
+          },
+        ),
+      ],
     );
   }
 
@@ -260,7 +493,7 @@ class _ItemRow extends ConsumerWidget {
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Timer visivo'),
-        children: [null, 5, 10, 15, 20]
+        children: [null, 1, 2, 5, 10, 15, 20, 30, 40, 50, 60]
             .map((m) => SimpleDialogOption(
                   onPressed: () => Navigator.pop(context, m ?? -1),
                   child: Text(m == null ? 'Nessuno' : '$m minuti'),

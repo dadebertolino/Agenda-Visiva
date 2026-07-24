@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants.dart';
 import '../../core/providers.dart';
@@ -62,6 +63,47 @@ class SettingsScreen extends ConsumerWidget {
                   save(settings.copyWith(cardSize: s.first)),
             ),
           ),
+          ListTile(
+            title: const Text('Timer visivo'),
+            subtitle: const Text('Barra che si riempie o anello che si svuota'),
+            trailing: SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'linear', label: Text('Barra')),
+                ButtonSegment(value: 'circular', label: Text('Anello')),
+              ],
+              selected: {settings.timerStyle},
+              onSelectionChanged: (s) =>
+                  save(settings.copyWith(timerStyle: s.first)),
+            ),
+          ),
+          ListTile(
+            title: const Text('Linea attività'),
+            subtitle:
+                const Text('Mostra cosa resta da fare o cosa è già fatto'),
+            trailing: SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'remaining', label: Text('Da fare')),
+                ButtonSegment(value: 'history', label: Text('Fatte')),
+              ],
+              selected: {settings.timelineMode},
+              onSelectionChanged: (s) =>
+                  save(settings.copyWith(timelineMode: s.first)),
+            ),
+          ),
+          SwitchListTile(
+            title: const Text('Mostra orari'),
+            subtitle: const Text(
+                'Orario di inizio e fine sotto l\'attività, se impostati'),
+            value: settings.showTimes,
+            onChanged: (v) => save(settings.copyWith(showTimes: v)),
+          ),
+          SwitchListTile(
+            title: const Text('Mostra dove e con chi'),
+            subtitle:
+                const Text('Luogo e persona sotto l\'attività, se impostati'),
+            value: settings.showBadges,
+            onChanged: (v) => save(settings.copyWith(showBadges: v)),
+          ),
           const Divider(),
           const _SectionHeader('Informazioni'),
           ListTile(
@@ -97,13 +139,35 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.code),
             title: const Text('Licenza e codice sorgente'),
-            subtitle: const Text('PolyForm Noncommercial 1.0.0'),
-            onTap: () => _showInfo(
-              context,
-              'Licenza',
-              'Il codice di Agenda Visiva è pubblico e gratuito per sempre. '
-                  'L\'uso commerciale è vietato (PolyForm Noncommercial 1.0.0).\n\n'
-                  'Il codice sorgente è consultabile su GitHub.',
+            subtitle: const Text(
+                'Codice pubblico su GitHub — PolyForm Noncommercial 1.0.0'),
+            onTap: () => showDialog<void>(
+              context: context,
+              builder: (dialogContext) => AlertDialog(
+                title: const Text('Codice sorgente pubblico'),
+                content: const Text(
+                  'Il codice di Agenda Visiva è pubblico, consultabile e '
+                  'gratuito per sempre. Chiunque può verificare come '
+                  'funziona e che i dati non lasciano mai il dispositivo.\n\n'
+                  'L\'uso commerciale è vietato '
+                  '(licenza PolyForm Noncommercial 1.0.0).',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Chiudi'),
+                  ),
+                  FilledButton.icon(
+                    icon: const Icon(Icons.open_in_new, size: 18),
+                    label: const Text('Apri GitHub'),
+                    onPressed: () => launchUrl(
+                      Uri.parse(
+                          'https://github.com/dadebertolino/Agenda-Visiva'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const ListTile(

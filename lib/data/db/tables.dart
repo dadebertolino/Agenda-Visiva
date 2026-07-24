@@ -22,7 +22,11 @@ class Profiles extends Table with SyncableTable {
   /// personal — FK a MediaAssets, nullable
   TextColumn get avatarAssetId => text().nullable()();
 
-  /// JSON: {tts: bool, sounds: bool, highContrast: bool, cardSize: string}
+  /// JSON: {tts: bool, sounds: bool, highContrast: bool, cardSize: string,
+  ///        timerStyle: "linear"|"circular" (default linear),
+  ///        timelineMode: "remaining"|"history" (default remaining),
+  ///        showTimes: bool (default false),
+  ///        showBadges: bool (default false)}
   TextColumn get settings => text().withDefault(const Constant('{}'))();
 }
 
@@ -59,6 +63,21 @@ class AgendaItems extends Table with SyncableTable {
   IntColumn get timerSeconds => integer().nullable()();
   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
   DateTimeColumn get completedAt => dateTime().nullable()();
+
+  // ---- v3 ----
+
+  /// Orario "di parete" locale, formato HH:mm, niente timezone.
+  /// Nullable: le agende firstThen non li usano.
+  TextColumn get startTime => text().nullable()();
+  TextColumn get endTime => text().nullable()();
+
+  /// Badge "dove" — JSON {type: arasaac|photo|text, ref?, label}.
+  /// Sull'item e non sull'Activity: "palestra con Maria" vale per
+  /// quel martedì, non per l'attività in sé. personal se type=photo.
+  TextColumn get placeJson => text().nullable()();
+
+  /// Badge "con chi" — stesso shape. personal (foto/nome di persona).
+  TextColumn get companionJson => text().nullable()();
 }
 
 /// Tavola di comunicazione "I miei bisogni" (per profilo).

@@ -10,22 +10,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Il player avanza al check-off e mostra la fine',
-      (tester) async {
+  testWidgets('Il player avanza al check-off e mostra la fine', (tester) async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(db.close);
     final agendas = AgendaRepo(db);
     final activities = ActivityRepo(db);
 
-    await db.into(db.profiles).insert(
-        ProfilesCompanion.insert(id: 'p1', displayName: 'Test'));
+    await db
+        .into(db.profiles)
+        .insert(ProfilesCompanion.insert(id: 'p1', displayName: 'Test'));
     final agendaId = await agendas.create(
         profileId: 'p1', title: 'Routine', type: AgendaType.daily);
     for (final label in ['Colazione', 'Cerchio']) {
       final act = await activities.create(
-          label: label,
-          type: PictogramType.builtin,
-          pictogramRef: 'gioco');
+          label: label, type: PictogramType.builtin, pictogramRef: 'gioco');
       await agendas.addItem(agendaId: agendaId, activityId: act);
     }
 
@@ -35,9 +33,9 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    // Prima attività dominante, la seconda è "Poi".
+    // Prima attività dominante, la seconda è "Dopo".
     expect(find.text('Colazione'), findsOneWidget);
-    expect(find.textContaining('Poi'), findsOneWidget);
+    expect(find.textContaining('Dopo'), findsOneWidget);
 
     // Check-off → avanza.
     await tester.tap(find.text('Fatto'));

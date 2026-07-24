@@ -109,6 +109,30 @@ class AgendaRepo {
         ),
       ).then((_) {});
 
+  /// Orari "di parete" HH:mm, entrambi opzionali (null = rimuovi).
+  Future<void> setItemTimes(String itemId,
+          {String? startTime, String? endTime}) =>
+      (_db.update(_db.agendaItems)..where((t) => t.id.equals(itemId))).write(
+        AgendaItemsCompanion(
+          startTime: Value(startTime),
+          endTime: Value(endTime),
+          updatedAt: Value(DateTime.now().toUtc()),
+          dirty: const Value(true),
+        ),
+      ).then((_) {});
+
+  /// Badge dove/con chi (JSON ItemBadge, null = rimuovi).
+  Future<void> setItemBadges(String itemId,
+          {String? placeJson, String? companionJson}) =>
+      (_db.update(_db.agendaItems)..where((t) => t.id.equals(itemId))).write(
+        AgendaItemsCompanion(
+          placeJson: Value(placeJson),
+          companionJson: Value(companionJson),
+          updatedAt: Value(DateTime.now().toUtc()),
+          dirty: const Value(true),
+        ),
+      ).then((_) {});
+
   /// Riordino drag & drop: riscrive le position in transazione.
   Future<void> reorderItems(String agendaId, List<String> orderedItemIds) =>
       _db.transaction(() async {

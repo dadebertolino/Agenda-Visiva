@@ -130,14 +130,124 @@ class PdfExportService {
     );
   }
 
-  Future<pw.MemoryImage?> _loadImage(EditorRow row) async {
+  /// Elenco giornata: una riga per attività (numero, mini-pittogramma,
+  /// label, orari se presenti, casella da spuntare a mano). Pensato come
+  /// "agenda per l'adulto" da appendere, complementare alla griglia.
+  Future<Uint8List> buildAgendaListPdf({
+    required Agenda agenda,
+    required List<EditorRow> rows,
+  }) async {
+    final images = <String, pw.MemoryImage?>{};
+    var hasArasaac = false;
+    for (final row in rows) {
+      images[row.item.id] = await _loadImage(row, res: K.resUi);
+      hasArasaac |= row.activity.pictogramType == PictogramType.arasaac;
+    }
+
+    final doc = pw.Document(title: agenda.title);
+    doc.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(36),
+        footer: !hasArasaac
+            ? null
+            : (context) => pw.Column(children: [
+                  pw.Divider(color: PdfColors.grey400, thickness: 0.5),
+                  pw.Text(
+                    arasaacAttribution,
+                    style: const pw.TextStyle(
+                        fontSize: 8, color: PdfColors.grey600),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ]),
+        build: (context) => [
+          pw.Text(agenda.title,
+              style:
+                  pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 16),
+          for (var i = 0; i < rows.length; i++) ...[
+            _listRow(i, rows[i], images[rows[i].item.id]),
+            if (i < rows.length - 1)
+              pw.Divider(color: PdfColors.grey300, thickness: 0.5),
+          ],
+        ],
+      ),
+    );
+    return doc.save();
+  }
+
+  pw.Widget _listRow(int index, EditorRow row, pw.MemoryImage? image) {
+    final times = [row.item.startTime, row.item.endTime]
+        .whereType<String>()
+        .join(' – ');
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 6),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.center,
+        children: [
+          pw.Container(
+            width: 22,
+            height: 22,
+            alignment: pw.Alignment.center,
+            decoration: const pw.BoxDecoration(
+                shape: pw.BoxShape.circle, color: PdfColors.grey300),
+            child:
+                pw.Text('${index + 1}', style: const pw.TextStyle(fontSize: 12)),
+          ),
+          pw.SizedBox(width: 12),
+          pw.SizedBox(
+            width: 42,
+            height: 42,
+            child: image != null
+                ? pw.Image(image, fit: pw.BoxFit.contain)
+                : pw.Container(
+                    alignment: pw.Alignment.center,
+                    decoration: const pw.BoxDecoration(
+                        shape: pw.BoxShape.circle, color: PdfColors.grey200),
+                    child: pw.Text(
+                        row.activity.label.isEmpty
+                            ? '?'
+                            : row.activity.label[0].toUpperCase(),
+                        style: pw.TextStyle(
+                            fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                  ),
+          ),
+          pw.SizedBox(width: 12),
+          pw.Expanded(
+            child: pw.Text(row.activity.label,
+                style: pw.TextStyle(
+                    fontSize: 16, fontWeight: pw.FontWeight.bold)),
+          ),
+          if (times.isNotEmpty)
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(right: 12),
+              child: pw.Text(times,
+                  style: const pw.TextStyle(
+                      fontSize: 12, color: PdfColors.grey700)),
+            ),
+          // Casella da spuntare a mano.
+          pw.Container(
+            width: 16,
+            height: 16,
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: PdfColors.grey600),
+              borderRadius: pw.BorderRadius.circular(3),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<pw.MemoryImage?> _loadImage(EditorRow row,
+      {int res = K.resPdf}) async {
     try {
       switch (row.activity.pictogramType) {
         case PictogramType.arasaac:
-          // 2500px: qualità da stampa. Cache disco: scarica una volta sola.
+          // Cache disco: scarica una volta sola.
           final file = await _arasaac.localImage(
               int.parse(row.activity.pictogramRef),
-              res: K.resPdf);
+              res: res);
           return pw.MemoryImage(await file.readAsBytes());
         case PictogramType.photo:
           final file = await _media.fileFor(row.activity.pictogramRef);

@@ -3,7 +3,7 @@ description: >-
   Agende visive per bambini autistici e con svantaggio linguistico.
   Gratuita per sempre. Offline-first, zero tracker.
 publish_to: none
-version: 1.0.0+2
+version: 1.1.0+3
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -46,6 +46,7 @@ dependencies:
 
   # Accessibilità
   flutter_tts: ^4.0.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

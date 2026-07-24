@@ -16,5 +16,5 @@ abstract final class K {
 
   static const String schemaVersionExport = '1';
 
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '1.1.0';
 }
