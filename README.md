@@ -20,12 +20,12 @@ Le agende visive (TEACCH, CAA) riducono l'ansia da transizione e aumentano l'aut
 
 ## Funzionalità
 
-- **Editor agenda** drag & drop: tre tipi (Giornata, Prima–Poi, Sequenza), timer visivo per attività, riuso rapido delle attività recenti
+- **Editor agenda** drag & drop: tre tipi (Giornata, Adesso–Dopo, Sequenza), riuso rapido delle attività recenti; per ogni attività: timer visivo (fino a 60 min), orario di inizio e fine, luogo e persona ("dove e con chi") — tutto opzionale, dal menu ⋮
 - **Pittogrammi**: ricerca ARASAAC in italiano (cache offline), foto personali, set base incluso
-- **Modalità bambino**: full-screen, card grandi (dimensione regolabile), avanzamento con check-off, timer analogico ad anello, lettura vocale (TTS it-IT), schermata di rinforzo a fine agenda
+- **Modalità bambino**: full-screen, card grandi (dimensione regolabile), check-off con conferma verde, linea delle attività che si svuota man mano che si completa (o storico, a scelta), timer a barra che si riempie o ad anello, etichette "Adesso/Dopo", lettura vocale (TTS it-IT), schermata di rinforzo a fine agenda
 - **Tavola "I miei bisogni"**: griglia di comunicazione CAA — il bambino tocca l'immagine (Acqua, Bagno, Aiuto...), il dispositivo pronuncia la parola; modificabile dall'adulto, raggiungibile anche durante la routine
 - **Profili multipli** con impostazioni individuali (voce, contrasto, dimensione pittogrammi)
-- **Export PDF** con 1, 2 o 4 pittogrammi per pagina, ottimizzato per ritaglio e laminazione + stampa diretta
+- **Export PDF** in due formati: griglia (1, 2 o 4 pittogrammi per pagina, ottimizzata per ritaglio e laminazione) ed elenco giornata con orari e caselle da spuntare + stampa diretta
 - **Condivisione casa↔scuola senza server**: formato `.agviz` (export/import idempotente via file)
 
 ## Piattaforme
@@ -48,7 +48,7 @@ Per iOS: aprire `ios/Runner.xcworkspace` e impostare il team di firma. Per Andro
 
 ## Architettura
 
-Feature-first, offline-first, sync-ready (UUID client-side, tombstone, campo `dirty` su ogni tabella: la futura sync E2E non richiederà migrazioni). Database drift con migrazioni versionate (attuale: v2).
+Feature-first, offline-first, sync-ready (UUID client-side, tombstone, campo `dirty` su ogni tabella: la futura sync E2E non richiederà migrazioni). Database drift con migrazioni versionate (attuale: v3).
 
 ```
 lib/
@@ -57,7 +57,7 @@ lib/
     db/          drift (SQLite): tabelle, migrazioni
     repositories/  Profile, Agenda, Activity, Board — le feature dipendono da qui, mai da drift
     services/    arasaac_api, media_store, pdf_export, agviz, tts
-  domain/        modelli puri (ProfileSettings, ...)
+  domain/        modelli puri (ProfileSettings, ItemBadge, ...)
   features/      profiles, builder, player, pictogram_picker, comunicazione, settings
 ```
 
@@ -66,8 +66,10 @@ Stack: Riverpod 2, drift, pdf/printing, flutter_tts. Dettagli e razionali in `do
 ## Roadmap
 
 - [x] MVP completo (editor, player, ARASAAC, foto, PDF parametrico, .agviz, impostazioni, tavola bisogni)
-- [ ] Pilota in una sezione di scuola dell'infanzia (in partenza) e iterazione col feedback
+- [x] Pilota in una sezione di scuola dell'infanzia — attivo
+- [x] v1.1: primo round di feedback dal pilota (orari, timer esteso, linea attività "cosa resta", Adesso/Dopo, PDF elenco giornata, dove/con chi)
 - [ ] Pubblicazione App Store (in corso) e Play Store
+- [ ] Guida all'uso per insegnanti e famiglie
 - [ ] Suoni di conferma e rifinitura accessibilità (alto contrasto)
 - [ ] Fase 2: sync casa-scuola con crittografia end-to-end (il server vedrà solo blob cifrati) — DPIA pubblica in questo repo
 
