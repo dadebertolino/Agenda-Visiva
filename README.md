@@ -35,7 +35,7 @@ iOS e Android da un unico codebase Flutter. Nota Android: il permesso `INTERNET`
 ## Setup sviluppo
 
 ```bash
-# Prerequisiti: Flutter stable >= 3.22
+# Prerequisiti: Flutter stable >= 3.32 (allineato alla CI)
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 dart run flutter_native_splash:create
