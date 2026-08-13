@@ -1,5 +1,6 @@
 import 'package:agenda_visiva/core/providers.dart';
 import 'package:agenda_visiva/data/db/database.dart';
+import 'package:agenda_visiva/features/onboarding/onboarding_service.dart';
 import 'package:agenda_visiva/main.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,12 @@ void main() {
     addTearDown(db.close);
 
     await tester.pumpWidget(ProviderScope(
-      overrides: [databaseProvider.overrideWithValue(db)],
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // Salta l'onboarding: qui verifichiamo la Home, non il primo avvio
+        // (ed evitiamo path_provider, non disponibile nei widget test).
+        onboardingDoneProvider.overrideWith((ref) => true),
+      ],
       child: const AgendaVisivaApp(),
     ));
     await tester.pumpAndSettle();

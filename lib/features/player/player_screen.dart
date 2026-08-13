@@ -36,7 +36,11 @@ class PlayerScreen extends ConsumerWidget {
     final done = currentIndex == -1 && items.isNotEmpty;
 
     return PopScope(
-      canPop: true,
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        // Back di sistema/gesto: non esce, ma spiega come si fa.
+        if (!didPop) _showExitHint(context);
+      },
       child: Scaffold(
         body: SafeArea(
           child: Column(
@@ -61,8 +65,9 @@ class PlayerScreen extends ConsumerWidget {
   }
 }
 
-/// Barra minima: indietro + titolo. Decisione dal testing: niente gate,
-/// da rivalidare col pilota (versione col calcolo nella storia git).
+/// Barra minima: gate adulto + titolo. Per uscire dalla modalità bambino
+/// si tiene premuta la freccia per [K.adultGateLongPress]: un tocco normale
+/// non basta, così il bambino non torna all'editor da solo.
 class _TopBar extends StatelessWidget {
   const _TopBar({required this.title, required this.profileId});
   final String title;
@@ -74,11 +79,7 @@ class _TopBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            tooltip: 'Torna indietro',
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          _AdultGateButton(onUnlocked: () => Navigator.of(context).pop()),
           const SizedBox(width: 4),
           Expanded(
             child: Text(title,
@@ -94,6 +95,104 @@ class _TopBar extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Suggerimento su come uscire: mostrato al tocco breve e al back di sistema.
+void _showExitHint(BuildContext context) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(const SnackBar(
+      content: Text('Per uscire, tieni premuta la freccia per 3 secondi'),
+      duration: Duration(seconds: 2),
+    ));
+}
+
+/// Gate adulto: la freccia esce solo se tenuta premuta per
+/// [K.adultGateLongPress]. Un anello si riempie durante la pressione;
+/// se si rilascia prima, non esce e appare il suggerimento.
+class _AdultGateButton extends StatefulWidget {
+  const _AdultGateButton({required this.onUnlocked});
+  final VoidCallback onUnlocked;
+
+  @override
+  State<_AdultGateButton> createState() => _AdultGateButtonState();
+}
+
+class _AdultGateButtonState extends State<_AdultGateButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: K.adultGateLongPress,
+  )..addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        HapticFeedback.mediumImpact();
+        widget.onUnlocked();
+      }
+    });
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _startHold() => _controller.forward();
+
+  void _cancelHold() {
+    // Se il gate si è già completato l'uscita è in corso: non fare nulla
+    // (il widget sta per essere smontato).
+    if (_controller.isCompleted) return;
+    // isAnimating è true già subito dopo forward(), anche prima del primo
+    // frame: così un tocco rapido — dove value è ancora 0 — viene comunque
+    // fermato, altrimenti il controller proseguirebbe fino a uscire da solo.
+    if (_controller.isAnimating) {
+      _controller.reset();
+      _showExitHint(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    // Listener (eventi puntatore grezzi) e non GestureDetector: così la
+    // pressione lunga non finisce nell'arena dei gesti contro altri
+    // riconoscitori. HitTestBehavior.opaque per ricevere il tocco su tutta
+    // l'area del pulsante, non solo sui pixel dell'icona.
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (_) => _startHold(),
+      onPointerUp: (_) => _cancelHold(),
+      onPointerCancel: (_) => _cancelHold(),
+      child: Semantics(
+        button: true,
+        label: 'Esci dalla modalità bambino: tieni premuto 3 secondi',
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, _) => _controller.value > 0
+                    ? SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          value: _controller.value,
+                          strokeWidth: 3,
+                          color: scheme.primary,
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              const Icon(Icons.arrow_back),
+            ],
+          ),
+        ),
       ),
     );
   }
