@@ -115,4 +115,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agendaTypeSequence => 'Sequence';
+
+  @override
+  String get homeNewProfileTitle => 'New profile';
+
+  @override
+  String get homeProfileNameLabel => 'Name or nickname';
+
+  @override
+  String get homeProfileNameHelper =>
+      'Recommended: first name only, no surname.\nStays on this device.';
+
+  @override
+  String get homeCreate => 'Create';
+
+  @override
+  String get homeRename => 'Rename';
+
+  @override
+  String get homeDelete => 'Delete';
+
+  @override
+  String get homeRenameProfileTitle => 'Rename profile';
+
+  @override
+  String get homeSave => 'Save';
+
+  @override
+  String homeDeleteProfileQuestion(String name) {
+    return 'Delete $name?';
+  }
+
+  @override
+  String get homeDeleteProfileBody =>
+      'Its schedules will no longer be visible.';
+
+  @override
+  String get homeCancel => 'Cancel';
+
+  @override
+  String get homeShareAgenda => 'Share (.agviz)';
+
+  @override
+  String get homeSharePhotosWarning =>
+      'If it contains photos, share only with trusted people';
+
+  @override
+  String get homeDeleteAgenda => 'Delete';
+
+  @override
+  String homeShareFailed(String error) {
+    return 'Sharing failed: $error';
+  }
+
+  @override
+  String get homeImportSuccess => 'Schedule imported';
+
+  @override
+  String homeImportFailed(String error) {
+    return 'Import failed: $error';
+  }
+
+  @override
+  String get homeNewAgendaTitle => 'New schedule';
+
+  @override
+  String get homeAgendaTitleLabel => 'Title';
+
+  @override
+  String get homeAgendaTitleHint => 'E.g. Morning routine';
+
+  @override
+  String homeDeleteAgendaQuestion(String title) {
+    return 'Delete \"$title\"?';
+  }
+
+  @override
+  String homeShareText(String title) {
+    return 'Schedule \"$title\" — open with Visual Schedule';
+  }
 }

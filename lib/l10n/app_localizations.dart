@@ -295,6 +295,138 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Sequenza'**
   String get agendaTypeSequence;
+
+  /// No description provided for @homeNewProfileTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo profilo'**
+  String get homeNewProfileTitle;
+
+  /// No description provided for @homeProfileNameLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome o soprannome'**
+  String get homeProfileNameLabel;
+
+  /// No description provided for @homeProfileNameHelper.
+  ///
+  /// In it, this message translates to:
+  /// **'Consigliato: solo il nome, niente cognome.\nResta solo su questo dispositivo.'**
+  String get homeProfileNameHelper;
+
+  /// No description provided for @homeCreate.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea'**
+  String get homeCreate;
+
+  /// No description provided for @homeRename.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina'**
+  String get homeRename;
+
+  /// No description provided for @homeDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get homeDelete;
+
+  /// No description provided for @homeRenameProfileTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina profilo'**
+  String get homeRenameProfileTitle;
+
+  /// No description provided for @homeSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get homeSave;
+
+  /// No description provided for @homeDeleteProfileQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare {name}?'**
+  String homeDeleteProfileQuestion(String name);
+
+  /// No description provided for @homeDeleteProfileBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Le sue agende non saranno più visibili.'**
+  String get homeDeleteProfileBody;
+
+  /// No description provided for @homeCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get homeCancel;
+
+  /// No description provided for @homeShareAgenda.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi (.agviz)'**
+  String get homeShareAgenda;
+
+  /// No description provided for @homeSharePhotosWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Se contiene foto, condividi solo con persone fidate'**
+  String get homeSharePhotosWarning;
+
+  /// No description provided for @homeDeleteAgenda.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get homeDeleteAgenda;
+
+  /// No description provided for @homeShareFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Condivisione non riuscita: {error}'**
+  String homeShareFailed(String error);
+
+  /// No description provided for @homeImportSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Agenda importata'**
+  String get homeImportSuccess;
+
+  /// No description provided for @homeImportFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Import non riuscito: {error}'**
+  String homeImportFailed(String error);
+
+  /// No description provided for @homeNewAgendaTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova agenda'**
+  String get homeNewAgendaTitle;
+
+  /// No description provided for @homeAgendaTitleLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo'**
+  String get homeAgendaTitleLabel;
+
+  /// No description provided for @homeAgendaTitleHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Es. Routine mattina'**
+  String get homeAgendaTitleHint;
+
+  /// No description provided for @homeDeleteAgendaQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare \"{title}\"?'**
+  String homeDeleteAgendaQuestion(String title);
+
+  /// No description provided for @homeShareText.
+  ///
+  /// In it, this message translates to:
+  /// **'Agenda \"{title}\" — apribile con Agenda Visiva'**
+  String homeShareText(String title);
 }
 
 class _AppLocalizationsDelegate

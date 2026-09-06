@@ -92,18 +92,18 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Future<void> _createProfile(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     final name = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Nuovo profilo'),
+        title: Text(l10n.homeNewProfileTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Nome o soprannome',
-            helperText: 'Consigliato: solo il nome, niente cognome.\n'
-                'Resta solo su questo dispositivo.',
+          decoration: InputDecoration(
+            labelText: l10n.homeProfileNameLabel,
+            helperText: l10n.homeProfileNameHelper,
             helperMaxLines: 2,
           ),
           onSubmitted: (v) => Navigator.pop(dialogContext, v.trim()),
@@ -112,7 +112,7 @@ class HomeScreen extends ConsumerWidget {
           TextButton(
             onPressed: () =>
                 Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Crea'),
+            child: Text(l10n.homeCreate),
           ),
         ],
       ),
@@ -123,13 +123,14 @@ class HomeScreen extends ConsumerWidget {
 
   Future<void> _profileOptions(
       BuildContext context, WidgetRef ref, Profile p) async {
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet<void>(
       context: context,
       builder: (sheetContext) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           ListTile(
             leading: const Icon(Icons.edit_outlined),
-            title: const Text('Rinomina'),
+            title: Text(l10n.homeRename),
             onTap: () {
               Navigator.pop(sheetContext);
               _renameProfile(context, ref, p);
@@ -137,7 +138,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.delete_outline),
-            title: const Text('Elimina'),
+            title: Text(l10n.homeDelete),
             onTap: () {
               Navigator.pop(sheetContext);
               _deleteProfile(context, ref, p);
@@ -150,11 +151,12 @@ class HomeScreen extends ConsumerWidget {
 
   Future<void> _renameProfile(
       BuildContext context, WidgetRef ref, Profile p) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: p.displayName);
     final name = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Rinomina profilo'),
+        title: Text(l10n.homeRenameProfileTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -164,7 +166,7 @@ class HomeScreen extends ConsumerWidget {
           TextButton(
             onPressed: () =>
                 Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Salva'),
+            child: Text(l10n.homeSave),
           ),
         ],
       ),
@@ -175,18 +177,19 @@ class HomeScreen extends ConsumerWidget {
 
   Future<void> _deleteProfile(
       BuildContext context, WidgetRef ref, Profile p) async {
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Eliminare ${p.displayName}?'),
-        content: const Text('Le sue agende non saranno più visibili.'),
+        title: Text(l10n.homeDeleteProfileQuestion(p.displayName)),
+        content: Text(l10n.homeDeleteProfileBody),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Annulla')),
+              child: Text(l10n.homeCancel)),
           TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Elimina')),
+              child: Text(l10n.homeDelete)),
         ],
       ),
     );
@@ -291,23 +294,25 @@ class ProfileAgendasScreen extends ConsumerWidget {
   }
 
   Future<void> _createAgenda(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     final title = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Nuova agenda'),
+        title: Text(l10n.homeNewAgendaTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-              labelText: 'Titolo', hintText: 'Es. Routine mattina'),
+          decoration: InputDecoration(
+              labelText: l10n.homeAgendaTitleLabel,
+              hintText: l10n.homeAgendaTitleHint),
           onSubmitted: (v) => Navigator.pop(dialogContext, v.trim()),
         ),
         actions: [
           TextButton(
             onPressed: () =>
                 Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Crea'),
+            child: Text(l10n.homeCreate),
           ),
         ],
       ),
@@ -324,15 +329,15 @@ class ProfileAgendasScreen extends ConsumerWidget {
 
   Future<void> _agendaOptions(
       BuildContext context, WidgetRef ref, Agenda a) async {
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet<void>(
       context: context,
       builder: (sheetContext) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           ListTile(
             leading: const Icon(Icons.ios_share),
-            title: const Text('Condividi (.agviz)'),
-            subtitle: const Text(
-                'Se contiene foto, condividi solo con persone fidate'),
+            title: Text(l10n.homeShareAgenda),
+            subtitle: Text(l10n.homeSharePhotosWarning),
             onTap: () {
               Navigator.pop(sheetContext);
               _shareAgviz(context, ref, a);
@@ -340,7 +345,7 @@ class ProfileAgendasScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.delete_outline),
-            title: const Text('Elimina'),
+            title: Text(l10n.homeDeleteAgenda),
             onTap: () {
               Navigator.pop(sheetContext);
               _deleteAgenda(context, ref, a);
@@ -353,21 +358,23 @@ class ProfileAgendasScreen extends ConsumerWidget {
 
   Future<void> _shareAgviz(
       BuildContext context, WidgetRef ref, Agenda a) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     try {
       final service = await ref.read(agvizProvider.future);
       final file = await service.exportAgenda(a.id);
       await Share.shareXFiles(
         [XFile(file.path)],
-        text: 'Agenda "${a.title}" — apribile con Agenda Visiva',
+        text: l10n.homeShareText(a.title),
       );
     } catch (e) {
       messenger.showSnackBar(
-          SnackBar(content: Text('Condivisione non riuscita: $e')));
+          SnackBar(content: Text(l10n.homeShareFailed('$e'))));
     }
   }
 
   Future<void> _importAgviz(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     try {
       final picked = await FilePicker.platform.pickFiles();
@@ -377,26 +384,27 @@ class ProfileAgendasScreen extends ConsumerWidget {
       final service = await ref.read(agvizProvider.future);
       await service.importAgenda(File(path), profileId: profile.id);
       messenger.showSnackBar(
-          const SnackBar(content: Text('Agenda importata')));
+          SnackBar(content: Text(l10n.homeImportSuccess)));
     } catch (e) {
       messenger.showSnackBar(
-          SnackBar(content: Text('Import non riuscito: $e')));
+          SnackBar(content: Text(l10n.homeImportFailed('$e'))));
     }
   }
 
   Future<void> _deleteAgenda(
       BuildContext context, WidgetRef ref, Agenda a) async {
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Eliminare "${a.title}"?'),
+        title: Text(l10n.homeDeleteAgendaQuestion(a.title)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Annulla')),
+              child: Text(l10n.homeCancel)),
           TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Elimina')),
+              child: Text(l10n.homeDeleteAgenda)),
         ],
       ),
     );

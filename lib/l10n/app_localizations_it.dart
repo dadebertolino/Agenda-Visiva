@@ -114,4 +114,82 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get agendaTypeSequence => 'Sequenza';
+
+  @override
+  String get homeNewProfileTitle => 'Nuovo profilo';
+
+  @override
+  String get homeProfileNameLabel => 'Nome o soprannome';
+
+  @override
+  String get homeProfileNameHelper =>
+      'Consigliato: solo il nome, niente cognome.\nResta solo su questo dispositivo.';
+
+  @override
+  String get homeCreate => 'Crea';
+
+  @override
+  String get homeRename => 'Rinomina';
+
+  @override
+  String get homeDelete => 'Elimina';
+
+  @override
+  String get homeRenameProfileTitle => 'Rinomina profilo';
+
+  @override
+  String get homeSave => 'Salva';
+
+  @override
+  String homeDeleteProfileQuestion(String name) {
+    return 'Eliminare $name?';
+  }
+
+  @override
+  String get homeDeleteProfileBody => 'Le sue agende non saranno più visibili.';
+
+  @override
+  String get homeCancel => 'Annulla';
+
+  @override
+  String get homeShareAgenda => 'Condividi (.agviz)';
+
+  @override
+  String get homeSharePhotosWarning =>
+      'Se contiene foto, condividi solo con persone fidate';
+
+  @override
+  String get homeDeleteAgenda => 'Elimina';
+
+  @override
+  String homeShareFailed(String error) {
+    return 'Condivisione non riuscita: $error';
+  }
+
+  @override
+  String get homeImportSuccess => 'Agenda importata';
+
+  @override
+  String homeImportFailed(String error) {
+    return 'Import non riuscito: $error';
+  }
+
+  @override
+  String get homeNewAgendaTitle => 'Nuova agenda';
+
+  @override
+  String get homeAgendaTitleLabel => 'Titolo';
+
+  @override
+  String get homeAgendaTitleHint => 'Es. Routine mattina';
+
+  @override
+  String homeDeleteAgendaQuestion(String title) {
+    return 'Eliminare \"$title\"?';
+  }
+
+  @override
+  String homeShareText(String title) {
+    return 'Agenda \"$title\" — apribile con Agenda Visiva';
+  }
 }
