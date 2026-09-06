@@ -192,4 +192,58 @@ class AppLocalizationsIt extends AppLocalizations {
   String homeShareText(String title) {
     return 'Agenda \"$title\" — apribile con Agenda Visiva';
   }
+
+  @override
+  String get builderPrintPdf => 'Stampa / PDF';
+
+  @override
+  String get builderPreview => 'Anteprima come bambino';
+
+  @override
+  String get builderEmpty => 'Aggiungi la prima attività';
+
+  @override
+  String get builderAddActivity => 'Aggiungi attività';
+
+  @override
+  String get builderFormat => 'Formato';
+
+  @override
+  String get builderGrid => 'Griglia';
+
+  @override
+  String get builderList => 'Elenco';
+
+  @override
+  String get builderPictogramsPerPage => 'Pittogrammi per pagina';
+
+  @override
+  String get builderPrint => 'Stampa';
+
+  @override
+  String get builderGridSubtitle => 'Ottimizzato per ritaglio e laminazione';
+
+  @override
+  String get builderListSubtitle => 'Elenco della giornata con orari e caselle';
+
+  @override
+  String get builderSharePdf => 'Condividi PDF';
+
+  @override
+  String get builderPreparingPdf => 'Preparo il PDF…';
+
+  @override
+  String get builderNeedActivity =>
+      'Aggiungi almeno un\'attività prima di esportare';
+
+  @override
+  String builderExportFailed(String error) {
+    return 'Export non riuscito: $error';
+  }
+
+  @override
+  String get builderActivityName => 'Nome attività';
+
+  @override
+  String get builderAdd => 'Aggiungi';
 }

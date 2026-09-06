@@ -8,6 +8,7 @@ import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
 import '../../domain/item_badge.dart';
+import '../../l10n/app_localizations.dart';
 import '../pictogram_picker/pictogram_picker.dart';
 import '../player/player_screen.dart';
 import 'providers.dart';
@@ -24,6 +25,7 @@ class AgendaEditorScreen extends ConsumerWidget {
     final items = ref.watch(agendaItemsProvider(agendaId)).valueOrNull ?? [];
     final recents = ref.watch(recentActivitiesProvider).valueOrNull ?? [];
     final repo = ref.read(agendaRepoProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     if (agenda == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -35,12 +37,12 @@ class AgendaEditorScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.print_outlined),
-            tooltip: 'Stampa / PDF',
+            tooltip: l10n.builderPrintPdf,
             onPressed: () => _openExportSheet(context, ref),
           ),
           IconButton(
             icon: const Icon(Icons.play_arrow),
-            tooltip: 'Anteprima come bambino',
+            tooltip: l10n.builderPreview,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (_) => PlayerScreen(agendaId: agendaId)),
@@ -53,12 +55,16 @@ class AgendaEditorScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: SegmentedButton<AgendaType>(
-              segments: const [
-                ButtonSegment(value: AgendaType.daily, label: Text('Giornata')),
+                segments: [
                 ButtonSegment(
-                    value: AgendaType.firstThen, label: Text('Prima–Poi')),
+                  value: AgendaType.daily,
+                  label: Text(l10n.agendaTypeDaily)),
                 ButtonSegment(
-                    value: AgendaType.sequence, label: Text('Sequenza')),
+                  value: AgendaType.firstThen,
+                  label: Text(l10n.agendaTypeFirstThen)),
+                ButtonSegment(
+                  value: AgendaType.sequence,
+                  label: Text(l10n.agendaTypeSequence)),
               ],
               selected: {agenda.type},
               onSelectionChanged: (s) => repo.updateType(agendaId, s.first),
@@ -66,9 +72,9 @@ class AgendaEditorScreen extends ConsumerWidget {
           ),
           Expanded(
             child: items.isEmpty
-                ? const Center(
-                    child: Text('Aggiungi la prima attività',
-                        style: TextStyle(color: Colors.grey)))
+                ? Center(
+                  child: Text(l10n.builderEmpty,
+                        style: const TextStyle(color: Colors.grey)))
                 : ReorderableListView.builder(
                     buildDefaultDragHandles: false,
                     itemCount: items.length,
@@ -92,7 +98,7 @@ class AgendaEditorScreen extends ConsumerWidget {
                 style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(48)),
                 icon: const Icon(Icons.add),
-                label: const Text('Aggiungi attività'),
+                label: Text(l10n.builderAddActivity),
                 onPressed: () => _addActivity(context, ref),
               ),
             ),
@@ -103,6 +109,7 @@ class AgendaEditorScreen extends ConsumerWidget {
   }
 
   Future<void> _openExportSheet(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     var perPage = 4;
     var layout = 'grid'; // 'grid' | 'list'
     await showModalBottomSheet<void>(
@@ -114,11 +121,13 @@ class AgendaEditorScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
               child: Row(
                 children: [
-                  const Expanded(child: Text('Formato')),
+                  Expanded(child: Text(l10n.builderFormat)),
                   SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'grid', label: Text('Griglia')),
-                      ButtonSegment(value: 'list', label: Text('Elenco')),
+                    segments: [
+                      ButtonSegment(
+                          value: 'grid', label: Text(l10n.builderGrid)),
+                      ButtonSegment(
+                          value: 'list', label: Text(l10n.builderList)),
                     ],
                     selected: {layout},
                     onSelectionChanged: (s) =>
@@ -132,7 +141,7 @@ class AgendaEditorScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                 child: Row(
                   children: [
-                    const Expanded(child: Text('Pittogrammi per pagina')),
+                    Expanded(child: Text(l10n.builderPictogramsPerPage)),
                     SegmentedButton<int>(
                       segments: const [
                         ButtonSegment(value: 1, label: Text('1')),
@@ -148,10 +157,10 @@ class AgendaEditorScreen extends ConsumerWidget {
               ),
             ListTile(
               leading: const Icon(Icons.print),
-              title: const Text('Stampa'),
+                title: Text(l10n.builderPrint),
               subtitle: Text(layout == 'grid'
-                  ? 'Ottimizzato per ritaglio e laminazione'
-                  : 'Elenco della giornata con orari e caselle'),
+                  ? l10n.builderGridSubtitle
+                  : l10n.builderListSubtitle),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _exportPdf(context, ref,
@@ -160,7 +169,7 @@ class AgendaEditorScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.ios_share),
-              title: const Text('Condividi PDF'),
+              title: Text(l10n.builderSharePdf),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _exportPdf(context, ref,
@@ -175,16 +184,16 @@ class AgendaEditorScreen extends ConsumerWidget {
 
   Future<void> _exportPdf(BuildContext context, WidgetRef ref,
       {required bool share, int perPage = 4, String layout = 'grid'}) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
-    messenger.showSnackBar(
-        const SnackBar(content: Text('Preparo il PDF…')));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.builderPreparingPdf)));
     try {
       final repo = ref.read(agendaRepoProvider);
       final agenda = await repo.watchAgenda(agendaId).first;
       final rows = await repo.watchItems(agendaId).first;
       if (agenda == null || rows.isEmpty) {
-        messenger.showSnackBar(const SnackBar(
-            content: Text("Aggiungi almeno un'attività prima di esportare")));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.builderNeedActivity)));
         return;
       }
       final service = await ref.read(pdfExportProvider.future);
@@ -202,13 +211,14 @@ class AgendaEditorScreen extends ConsumerWidget {
         await Printing.layoutPdf(onLayout: (_) async => bytes);
       }
     } catch (e) {
-      messenger.showSnackBar(
-          SnackBar(content: Text('Export non riuscito: $e')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.builderExportFailed('$e'))));
     }
   }
 
   /// Flusso: picker (ARASAAC/base) -> label prefilled -> crea e aggiungi.
   Future<void> _addActivity(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final selection = await showPictogramPicker(context);
     if (selection == null || !context.mounted) return;
 
@@ -216,7 +226,7 @@ class AgendaEditorScreen extends ConsumerWidget {
     final label = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Nome attività'),
+        title: Text(l10n.builderActivityName),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -226,7 +236,7 @@ class AgendaEditorScreen extends ConsumerWidget {
           TextButton(
             onPressed: () =>
                 Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Aggiungi'),
+            child: Text(l10n.builderAdd),
           ),
         ],
       ),

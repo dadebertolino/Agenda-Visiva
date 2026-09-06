@@ -60,4 +60,22 @@
   "@homeImportFailed": {"placeholders": {"error": {"type": "String"}}},
   "@homeDeleteAgendaQuestion": {"placeholders": {"title": {"type": "String"}}},
   "@homeShareText": {"placeholders": {"title": {"type": "String"}}}
+  ,"builderPrintPdf": "Print / PDF",
+  "builderPreview": "Preview as child",
+  "builderEmpty": "Add the first activity",
+  "builderAddActivity": "Add activity",
+  "builderFormat": "Format",
+  "builderGrid": "Grid",
+  "builderList": "List",
+  "builderPictogramsPerPage": "Pictograms per page",
+  "builderPrint": "Print",
+  "builderGridSubtitle": "Optimized for cutting and laminating",
+  "builderListSubtitle": "Daily list with times and checkboxes",
+  "builderSharePdf": "Share PDF",
+  "builderPreparingPdf": "Preparing PDF…",
+  "builderNeedActivity": "Add at least one activity before exporting",
+  "builderExportFailed": "Export failed: {error}",
+  "builderActivityName": "Activity name",
+  "builderAdd": "Add",
+  "@builderExportFailed": {"placeholders": {"error": {"type": "String"}}}
 }

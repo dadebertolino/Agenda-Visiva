@@ -60,4 +60,22 @@
   "@homeImportFailed": {"placeholders": {"error": {"type": "String"}}},
   "@homeDeleteAgendaQuestion": {"placeholders": {"title": {"type": "String"}}},
   "@homeShareText": {"placeholders": {"title": {"type": "String"}}}
+  ,"builderPrintPdf": "Stampa / PDF",
+  "builderPreview": "Anteprima come bambino",
+  "builderEmpty": "Aggiungi la prima attività",
+  "builderAddActivity": "Aggiungi attività",
+  "builderFormat": "Formato",
+  "builderGrid": "Griglia",
+  "builderList": "Elenco",
+  "builderPictogramsPerPage": "Pittogrammi per pagina",
+  "builderPrint": "Stampa",
+  "builderGridSubtitle": "Ottimizzato per ritaglio e laminazione",
+  "builderListSubtitle": "Elenco della giornata con orari e caselle",
+  "builderSharePdf": "Condividi PDF",
+  "builderPreparingPdf": "Preparo il PDF…",
+  "builderNeedActivity": "Aggiungi almeno un'attività prima di esportare",
+  "builderExportFailed": "Export non riuscito: {error}",
+  "builderActivityName": "Nome attività",
+  "builderAdd": "Aggiungi",
+  "@builderExportFailed": {"placeholders": {"error": {"type": "String"}}}
 }

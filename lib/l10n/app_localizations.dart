@@ -427,6 +427,108 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Agenda \"{title}\" — apribile con Agenda Visiva'**
   String homeShareText(String title);
+
+  /// No description provided for @builderPrintPdf.
+  ///
+  /// In it, this message translates to:
+  /// **'Stampa / PDF'**
+  String get builderPrintPdf;
+
+  /// No description provided for @builderPreview.
+  ///
+  /// In it, this message translates to:
+  /// **'Anteprima come bambino'**
+  String get builderPreview;
+
+  /// No description provided for @builderEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi la prima attività'**
+  String get builderEmpty;
+
+  /// No description provided for @builderAddActivity.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi attività'**
+  String get builderAddActivity;
+
+  /// No description provided for @builderFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'Formato'**
+  String get builderFormat;
+
+  /// No description provided for @builderGrid.
+  ///
+  /// In it, this message translates to:
+  /// **'Griglia'**
+  String get builderGrid;
+
+  /// No description provided for @builderList.
+  ///
+  /// In it, this message translates to:
+  /// **'Elenco'**
+  String get builderList;
+
+  /// No description provided for @builderPictogramsPerPage.
+  ///
+  /// In it, this message translates to:
+  /// **'Pittogrammi per pagina'**
+  String get builderPictogramsPerPage;
+
+  /// No description provided for @builderPrint.
+  ///
+  /// In it, this message translates to:
+  /// **'Stampa'**
+  String get builderPrint;
+
+  /// No description provided for @builderGridSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Ottimizzato per ritaglio e laminazione'**
+  String get builderGridSubtitle;
+
+  /// No description provided for @builderListSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Elenco della giornata con orari e caselle'**
+  String get builderListSubtitle;
+
+  /// No description provided for @builderSharePdf.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi PDF'**
+  String get builderSharePdf;
+
+  /// No description provided for @builderPreparingPdf.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparo il PDF…'**
+  String get builderPreparingPdf;
+
+  /// No description provided for @builderNeedActivity.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi almeno un\'attività prima di esportare'**
+  String get builderNeedActivity;
+
+  /// No description provided for @builderExportFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Export non riuscito: {error}'**
+  String builderExportFailed(String error);
+
+  /// No description provided for @builderActivityName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome attività'**
+  String get builderActivityName;
+
+  /// No description provided for @builderAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get builderAdd;
 }
 
 class _AppLocalizationsDelegate

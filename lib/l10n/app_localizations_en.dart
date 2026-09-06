@@ -194,4 +194,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String homeShareText(String title) {
     return 'Schedule \"$title\" — open with Visual Schedule';
   }
+
+  @override
+  String get builderPrintPdf => 'Print / PDF';
+
+  @override
+  String get builderPreview => 'Preview as child';
+
+  @override
+  String get builderEmpty => 'Add the first activity';
+
+  @override
+  String get builderAddActivity => 'Add activity';
+
+  @override
+  String get builderFormat => 'Format';
+
+  @override
+  String get builderGrid => 'Grid';
+
+  @override
+  String get builderList => 'List';
+
+  @override
+  String get builderPictogramsPerPage => 'Pictograms per page';
+
+  @override
+  String get builderPrint => 'Print';
+
+  @override
+  String get builderGridSubtitle => 'Optimized for cutting and laminating';
+
+  @override
+  String get builderListSubtitle => 'Daily list with times and checkboxes';
+
+  @override
+  String get builderSharePdf => 'Share PDF';
+
+  @override
+  String get builderPreparingPdf => 'Preparing PDF…';
+
+  @override
+  String get builderNeedActivity =>
+      'Add at least one activity before exporting';
+
+  @override
+  String builderExportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get builderActivityName => 'Activity name';
+
+  @override
+  String get builderAdd => 'Add';
 }
