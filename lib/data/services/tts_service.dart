@@ -4,9 +4,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 /// (test, emulatori senza engine) l'app non deve rompersi.
 class TtsService {
   final FlutterTts _tts = FlutterTts();
-  bool _configured = false;
+  String? _configuredLocale;
 
-  Future<void> _configure() async {
+  Future<void> _configure(String locale) async {
     // iOS: categoria playback = suona anche con interruttore silenzioso,
     // istanza condivisa per non farsi silenziare da altre app.
     try {
@@ -18,16 +18,16 @@ class TtsService {
     } catch (_) {
       // Android o piattaforma senza queste API: ok così.
     }
-    await _tts.setLanguage('it-IT');
+    await _tts.setLanguage(locale);
     await _tts.setSpeechRate(0.45);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);
-    _configured = true;
+    _configuredLocale = locale;
   }
 
-  Future<void> speak(String text) async {
+  Future<void> speak(String text, {String locale = 'it-IT'}) async {
     try {
-      if (!_configured) await _configure();
+      if (_configuredLocale != locale) await _configure(locale);
       await _tts.stop();
       await _tts.speak(text);
     } catch (_) {

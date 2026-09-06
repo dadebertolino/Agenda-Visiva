@@ -185,6 +185,7 @@ class AgendaEditorScreen extends ConsumerWidget {
   Future<void> _exportPdf(BuildContext context, WidgetRef ref,
       {required bool share, int perPage = 4, String layout = 'grid'}) async {
     final l10n = AppLocalizations.of(context)!;
+    final languageCode = Localizations.localeOf(context).languageCode;
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(SnackBar(content: Text(l10n.builderPreparingPdf)));
     try {
@@ -198,9 +199,13 @@ class AgendaEditorScreen extends ConsumerWidget {
       }
       final service = await ref.read(pdfExportProvider.future);
       final bytes = layout == 'list'
-          ? await service.buildAgendaListPdf(agenda: agenda, rows: rows)
+          ? await service.buildAgendaListPdf(
+            agenda: agenda, rows: rows, languageCode: languageCode)
           : await service.buildAgendaPdf(
-              agenda: agenda, rows: rows, perPage: perPage);
+            agenda: agenda,
+            rows: rows,
+            perPage: perPage,
+            languageCode: languageCode);
       messenger.hideCurrentSnackBar();
 
       final filename =

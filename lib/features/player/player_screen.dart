@@ -378,7 +378,10 @@ class _CurrentCard extends ConsumerWidget {
             if (!settings.tts) return;
             ref
                 .read(ttsProvider)
-                .speak(row.activity.ttsText ?? row.activity.label);
+                .speak(
+                  row.activity.ttsText ?? row.activity.label,
+                  locale: _ttsLocale(context),
+                );
           },
           child: PictogramThumb(
             type: row.activity.pictogramType,
@@ -429,6 +432,9 @@ String _formatTimes(AppLocalizations l10n, String? start, String? end) =>
       (final startTime, final endTime) =>
         l10n.playerTimeRange(startTime!, endTime!),
     };
+
+  String _ttsLocale(BuildContext context) =>
+    Localizations.localeOf(context).languageCode == 'en' ? 'en-US' : 'it-IT';
 
 /// Anello analogico che si svuota: rappresentazione TEACCH-friendly,
 /// niente cifre.

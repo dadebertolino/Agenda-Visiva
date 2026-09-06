@@ -75,7 +75,10 @@ class _PictogramPickerScreenState extends ConsumerState<PictogramPickerScreen> {
     if (query.isEmpty) return;
 
     try {
-      final results = await ref.read(arasaacApiProvider).search(query);
+        final language = Localizations.localeOf(context).languageCode;
+        final results = await ref
+          .read(arasaacApiProvider)
+          .search(query, lang: language);
       if (!mounted || query != _query) return;
       setState(() {
         _results = results;

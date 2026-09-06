@@ -103,7 +103,12 @@ class _NeedCard extends ConsumerWidget {
           // La voce è lo scopo della tavola: parla sempre.
           ref
               .read(ttsProvider)
-              .speak(row.activity.ttsText ?? row.activity.label);
+              .speak(
+              row.activity.ttsText ?? row.activity.label,
+              locale: Localizations.localeOf(context).languageCode == 'en'
+                ? 'en-US'
+                : 'it-IT',
+              );
         },
         child: Padding(
           padding: const EdgeInsets.all(12),

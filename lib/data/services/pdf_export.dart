@@ -35,6 +35,7 @@ class PdfExportService {
     required Agenda agenda,
     required List<EditorRow> rows,
     int perPage = 4,
+    String languageCode = 'it',
   }) async {
     final (cardW, cardH, labelSize) = switch (perPage) {
       1 => (505.0, 655.0, 34.0),
@@ -50,6 +51,7 @@ class PdfExportService {
       title: agenda.title,
       theme: await _pdfTheme(),
     );
+    final labels = _PdfLabels(languageCode);
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -67,7 +69,7 @@ class PdfExportService {
               style:
                   pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 4),
-          pw.Text('Ritaglia lungo le linee tratteggiate e plastifica.',
+          pw.Text(labels.cutAndLaminate,
               style:
                   const pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
           pw.SizedBox(height: 16),
@@ -150,6 +152,7 @@ class PdfExportService {
   Future<Uint8List> buildAgendaListPdf({
     required Agenda agenda,
     required List<EditorRow> rows,
+    String languageCode = 'it',
   }) async {
     final images = <String, pw.MemoryImage?>{};
     var hasArasaac = false;
@@ -162,6 +165,7 @@ class PdfExportService {
       title: agenda.title,
       theme: await _pdfTheme(),
     );
+    final labels = _PdfLabels(languageCode);
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -183,7 +187,7 @@ class PdfExportService {
                   pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 16),
           for (var i = 0; i < rows.length; i++) ...[
-            _listRow(i, rows[i], images[rows[i].item.id]),
+            _listRow(i, rows[i], images[rows[i].item.id], labels),
             if (i < rows.length - 1)
               pw.Divider(color: PdfColors.grey300, thickness: 0.5),
           ],
@@ -193,7 +197,8 @@ class PdfExportService {
     return doc.save();
   }
 
-  pw.Widget _listRow(int index, EditorRow row, pw.MemoryImage? image) {
+  pw.Widget _listRow(
+      int index, EditorRow row, pw.MemoryImage? image, _PdfLabels labels) {
     final times = [row.item.startTime, row.item.endTime]
         .whereType<String>()
         .join(' – ');
@@ -242,7 +247,6 @@ class PdfExportService {
                   style: const pw.TextStyle(
                       fontSize: 12, color: PdfColors.grey700)),
             ),
-          // Casella da spuntare a mano.
           pw.Container(
             width: 16,
             height: 16,
@@ -277,4 +281,13 @@ class PdfExportService {
       return null; // offline o file mancante: placeholder, mai crash
     }
   }
+}
+
+class _PdfLabels {
+  _PdfLabels(String languageCode)
+      : cutAndLaminate = languageCode == 'en'
+            ? 'Cut along the dotted lines and laminate.'
+            : 'Ritaglia lungo le linee tratteggiate e plastifica.';
+
+  final String cutAndLaminate;
 }
