@@ -529,6 +529,114 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi'**
   String get builderAdd;
+
+  /// No description provided for @builderItemOptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Opzioni attività'**
+  String get builderItemOptions;
+
+  /// No description provided for @builderTimer.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer visivo'**
+  String get builderTimer;
+
+  /// No description provided for @builderTimes.
+  ///
+  /// In it, this message translates to:
+  /// **'Orario inizio e fine'**
+  String get builderTimes;
+
+  /// No description provided for @builderBadges.
+  ///
+  /// In it, this message translates to:
+  /// **'Dove e con chi'**
+  String get builderBadges;
+
+  /// No description provided for @builderRemove.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi dall\'agenda'**
+  String get builderRemove;
+
+  /// No description provided for @builderStartTimeHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Orario di inizio (Annulla = nessuno)'**
+  String get builderStartTimeHelp;
+
+  /// No description provided for @builderEndTimeHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Orario di fine (Annulla = nessuno)'**
+  String get builderEndTimeHelp;
+
+  /// No description provided for @builderWhereHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Dove (es. Palestra)'**
+  String get builderWhereHint;
+
+  /// No description provided for @builderWithWhoHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Con chi (es. Maria)'**
+  String get builderWithWhoHint;
+
+  /// No description provided for @builderChoosePictogram.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli pittogramma'**
+  String get builderChoosePictogram;
+
+  /// No description provided for @builderCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get builderCancel;
+
+  /// No description provided for @builderSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get builderSave;
+
+  /// No description provided for @builderTimerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer visivo'**
+  String get builderTimerTitle;
+
+  /// No description provided for @builderNoTimer.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuno'**
+  String get builderNoTimer;
+
+  /// No description provided for @builderMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1 {1 minuto} other {{count} minuti}}'**
+  String builderMinutes(num count);
+
+  /// No description provided for @builderTimerSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer: {minutes} min'**
+  String builderTimerSummary(num minutes);
+
+  /// No description provided for @builderEndOnly.
+  ///
+  /// In it, this message translates to:
+  /// **'– {end}'**
+  String builderEndOnly(String end);
+
+  /// No description provided for @builderTimeRange.
+  ///
+  /// In it, this message translates to:
+  /// **'{start} – {end}'**
+  String builderTimeRange(String start, String end);
 }
 
 class _AppLocalizationsDelegate

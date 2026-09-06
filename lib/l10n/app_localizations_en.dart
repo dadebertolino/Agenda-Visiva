@@ -248,4 +248,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get builderAdd => 'Add';
+
+  @override
+  String get builderItemOptions => 'Activity options';
+
+  @override
+  String get builderTimer => 'Visual timer';
+
+  @override
+  String get builderTimes => 'Start and end time';
+
+  @override
+  String get builderBadges => 'Where and with whom';
+
+  @override
+  String get builderRemove => 'Remove from schedule';
+
+  @override
+  String get builderStartTimeHelp => 'Start time (Cancel = none)';
+
+  @override
+  String get builderEndTimeHelp => 'End time (Cancel = none)';
+
+  @override
+  String get builderWhereHint => 'Where (e.g. Gym)';
+
+  @override
+  String get builderWithWhoHint => 'With whom (e.g. Maria)';
+
+  @override
+  String get builderChoosePictogram => 'Choose pictogram';
+
+  @override
+  String get builderCancel => 'Cancel';
+
+  @override
+  String get builderSave => 'Save';
+
+  @override
+  String get builderTimerTitle => 'Visual timer';
+
+  @override
+  String get builderNoTimer => 'None';
+
+  @override
+  String builderMinutes(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes',
+      one: '1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String builderTimerSummary(num minutes) {
+    return 'Timer: $minutes min';
+  }
+
+  @override
+  String builderEndOnly(String end) {
+    return '– $end';
+  }
+
+  @override
+  String builderTimeRange(String start, String end) {
+    return '$start – $end';
+  }
 }

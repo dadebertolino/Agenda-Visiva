@@ -263,16 +263,17 @@ class _ItemRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.read(agendaRepoProvider);
+    final l10n = AppLocalizations.of(context)!;
     final timer = row.item.timerSeconds;
     final times = switch ((row.item.startTime, row.item.endTime)) {
       (null, null) => null,
       (final s, null) => s,
-      (null, final e) => '– $e',
-      (final s, final e) => '$s – $e',
+      (null, final e) => l10n.builderEndOnly(e!),
+      (final s, final e) => l10n.builderTimeRange(s!, e!),
     };
     final subtitle = [
       if (times != null) times,
-      if (timer != null) 'Timer: ${timer ~/ 60} min',
+      if (timer != null) l10n.builderTimerSummary(timer ~/ 60),
     ].join('   ');
 
     return ListTile(
@@ -298,7 +299,7 @@ class _ItemRow extends ConsumerWidget {
       subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
       trailing: IconButton(
         icon: const Icon(Icons.more_vert),
-        tooltip: 'Opzioni attività',
+        tooltip: l10n.builderItemOptions,
         onPressed: () => _showItemOptions(context, repo),
       ),
     );
@@ -307,6 +308,7 @@ class _ItemRow extends ConsumerWidget {
   /// Menu opzioni item: sostituisce il long-press diretto sul timer
   /// ora che le opzioni per-item sono più di una.
   Future<void> _showItemOptions(BuildContext context, AgendaRepo repo) async {
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet<void>(
       context: context,
       builder: (sheetContext) => SafeArea(
@@ -315,7 +317,7 @@ class _ItemRow extends ConsumerWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.hourglass_bottom),
-              title: const Text('Timer visivo'),
+              title: Text(l10n.builderTimer),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _pickTimer(context, repo);
@@ -323,7 +325,7 @@ class _ItemRow extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.schedule),
-              title: const Text('Orario inizio e fine'),
+              title: Text(l10n.builderTimes),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _pickTimes(context, repo);
@@ -331,7 +333,7 @@ class _ItemRow extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.place_outlined),
-              title: const Text('Dove e con chi'),
+              title: Text(l10n.builderBadges),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _pickBadges(context, repo);
@@ -341,7 +343,7 @@ class _ItemRow extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.delete_outline,
                   color: Theme.of(context).colorScheme.error),
-              title: Text('Rimuovi dall\'agenda',
+              title: Text(l10n.builderRemove,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.error)),
               onTap: () {
@@ -356,6 +358,7 @@ class _ItemRow extends ConsumerWidget {
   }
 
   Future<void> _pickTimes(BuildContext context, AgendaRepo repo) async {
+    final l10n = AppLocalizations.of(context)!;
     TimeOfDay? parse(String? hhmm) {
       if (hhmm == null) return null;
       final parts = hhmm.split(':');
@@ -369,13 +372,13 @@ class _ItemRow extends ConsumerWidget {
     if (!context.mounted) return;
     final start = await showTimePicker(
       context: context,
-      helpText: 'Orario di inizio (Annulla = nessuno)',
+      helpText: l10n.builderStartTimeHelp,
       initialTime: parse(row.item.startTime) ?? TimeOfDay.now(),
     );
     if (!context.mounted) return;
     final end = await showTimePicker(
       context: context,
-      helpText: 'Orario di fine (Annulla = nessuno)',
+      helpText: l10n.builderEndTimeHelp,
       initialTime: parse(row.item.endTime) ??
           start ??
           TimeOfDay.now(),
@@ -390,6 +393,7 @@ class _ItemRow extends ConsumerWidget {
   /// Dialog dove/con chi: testo libero + pittogramma opzionale dal picker.
   /// Campo vuoto = badge rimosso.
   Future<void> _pickBadges(BuildContext context, AgendaRepo repo) async {
+    final l10n = AppLocalizations.of(context)!;
     var place = ItemBadge.fromJsonString(row.item.placeJson);
     var companion = ItemBadge.fromJsonString(row.item.companionJson);
     final placeCtrl = TextEditingController(text: place?.label ?? '');
@@ -399,14 +403,14 @@ class _ItemRow extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Dove e con chi'),
+          title: Text(l10n.builderBadges),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               _badgeField(
                 context: context,
                 icon: Icons.place_outlined,
-                hint: 'Dove (es. Palestra)',
+                hint: l10n.builderWhereHint,
                 controller: placeCtrl,
                 badge: place,
                 onPictogram: (b) => setState(() => place = b),
@@ -415,7 +419,7 @@ class _ItemRow extends ConsumerWidget {
               _badgeField(
                 context: context,
                 icon: Icons.person_outline,
-                hint: 'Con chi (es. Maria)',
+                hint: l10n.builderWithWhoHint,
                 controller: companionCtrl,
                 badge: companion,
                 onPictogram: (b) => setState(() => companion = b),
@@ -425,11 +429,11 @@ class _ItemRow extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Annulla'),
+              child: Text(l10n.builderCancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Salva'),
+              child: Text(l10n.builderSave),
             ),
           ],
         ),
@@ -480,7 +484,7 @@ class _ItemRow extends ConsumerWidget {
         ),
         IconButton(
           icon: const Icon(Icons.image_search),
-          tooltip: 'Scegli pittogramma',
+          tooltip: AppLocalizations.of(context)!.builderChoosePictogram,
           onPressed: () async {
             final sel = await showPictogramPicker(context);
             if (sel == null) return;
@@ -499,14 +503,16 @@ class _ItemRow extends ConsumerWidget {
   }
 
   Future<void> _pickTimer(BuildContext context, AgendaRepo repo) async {
+    final l10n = AppLocalizations.of(context)!;
     final minutes = await showDialog<int?>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: const Text('Timer visivo'),
+        title: Text(l10n.builderTimerTitle),
         children: [null, 1, 2, 5, 10, 15, 20, 30, 40, 50, 60]
             .map((m) => SimpleDialogOption(
                   onPressed: () => Navigator.pop(context, m ?? -1),
-                  child: Text(m == null ? 'Nessuno' : '$m minuti'),
+                    child: Text(
+                      m == null ? l10n.builderNoTimer : l10n.builderMinutes(m)),
                 ))
             .toList(),
       ),
