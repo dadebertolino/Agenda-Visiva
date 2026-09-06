@@ -16,7 +16,7 @@ import '../db/tables.dart';
 class AgvizService {
   AgvizService(this._db, this._docsDir);
 
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
 
   final AppDatabase _db;
   final Directory _docsDir;
@@ -61,6 +61,10 @@ class AgvizService {
             'activityId': i.activityId,
             'position': i.position,
             'timerSeconds': i.timerSeconds,
+            'startTime': i.startTime,
+            'endTime': i.endTime,
+            'placeJson': i.placeJson,
+            'companionJson': i.companionJson,
           }
       ],
       'activities': [
@@ -204,6 +208,10 @@ class AgvizService {
                 activityId: i['activityId'] as String,
                 position: (i['position'] as num).toInt(),
                 timerSeconds: Value((i['timerSeconds'] as num?)?.toInt()),
+                startTime: Value(i['startTime'] as String?),
+                endTime: Value(i['endTime'] as String?),
+                placeJson: Value(i['placeJson'] as String?),
+                companionJson: Value(i['companionJson'] as String?),
               ),
             );
       }

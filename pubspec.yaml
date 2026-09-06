@@ -3,7 +3,7 @@ description: >-
   Agende visive per bambini autistici e con svantaggio linguistico.
   Gratuita per sempre. Offline-first, zero tracker.
 publish_to: none
-version: 1.2.0+4
+version: 1.2.1+5
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

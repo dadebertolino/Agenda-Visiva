@@ -31,7 +31,8 @@ class ProfileRepo {
       ).then((_) {});
 
   Stream<Profile?> watchById(String id) =>
-      (_db.select(_db.profiles)..where((t) => t.id.equals(id)))
+      (_db.select(_db.profiles)
+        ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
           .watchSingleOrNull();
 
   /// JSON impostazioni del profilo proprietario di un'agenda (per il player).
@@ -39,7 +40,9 @@ class ProfileRepo {
     final query = _db.select(_db.agendas).join([
       innerJoin(_db.profiles, _db.profiles.id.equalsExp(_db.agendas.profileId)),
     ])
-      ..where(_db.agendas.id.equals(agendaId));
+        ..where(_db.agendas.id.equals(agendaId) &
+          _db.agendas.deletedAt.isNull() &
+          _db.profiles.deletedAt.isNull());
     return query
         .watchSingleOrNull()
         .map((row) => row?.readTable(_db.profiles).settings);

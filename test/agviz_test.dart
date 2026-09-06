@@ -31,6 +31,14 @@ void main() {
       await agendasA.addItem(
           agendaId: agendaId, activityId: act, timerSeconds: timer);
     }
+        final exportedRows = await agendasA.watchItems(agendaId).first;
+        await agendasA.setItemTimes(exportedRows.first.item.id,
+                startTime: '08:30', endTime: '09:00');
+        await agendasA.setItemBadges(
+            exportedRows.first.item.id,
+            placeJson: '{"type":"text","label":"Palestra"}',
+            companionJson: '{"type":"text","label":"Maria"}',
+        );
 
     final file =
         await AgvizService(dbA, tmpA).exportAgenda(agendaId);
@@ -57,6 +65,10 @@ void main() {
     final rows = await agendasB.watchItems(agendaId).first;
     expect(rows.map((r) => r.activity.label), ['Cerchio', 'Pittura']);
     expect(rows.first.item.timerSeconds, 300);
+    expect(rows.first.item.startTime, '08:30');
+    expect(rows.first.item.endTime, '09:00');
+    expect(rows.first.item.placeJson, '{"type":"text","label":"Palestra"}');
+    expect(rows.first.item.companionJson, '{"type":"text","label":"Maria"}');
     expect(rows.every((r) => !r.item.isCompleted), isTrue);
 
     // Idempotenza: re-import = aggiornamento, non duplicato

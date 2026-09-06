@@ -15,7 +15,8 @@ class AgendaRepo {
   final AppDatabase _db;
 
   Stream<Agenda?> watchAgenda(String id) =>
-      (_db.select(_db.agendas)..where((t) => t.id.equals(id)))
+      (_db.select(_db.agendas)
+        ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
           .watchSingleOrNull();
 
   /// Agende attive di un profilo (tombstone esclusi), ordinate.

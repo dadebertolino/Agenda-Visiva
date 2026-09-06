@@ -14,7 +14,7 @@ abstract final class K {
   /// Durata pressione lunga per il gate adulto.
   static const Duration adultGateLongPress = Duration(seconds: 3);
 
-  static const String schemaVersionExport = '1';
+  static const String schemaVersionExport = '2';
 
-  static const String appVersion = '1.2.0';
+  static const String appVersion = '1.2.1';
 }

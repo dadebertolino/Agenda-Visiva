@@ -77,4 +77,11 @@ void main() {
     expect(rows.single.item.isCompleted, isFalse);
     expect(rows.single.item.completedAt, isNull);
   });
+
+  test('watchAgenda nasconde le agende tombstone', () async {
+    await agendas.softDelete(agendaId);
+
+    expect(await agendas.watchAgenda(agendaId).first, isNull);
+    expect(await agendas.watchByProfile('p1').first, isEmpty);
+  });
 }
