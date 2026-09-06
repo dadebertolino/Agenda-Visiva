@@ -17,5 +17,20 @@
   "onboardingPrivacyTitle": "Your data stays here",
   "onboardingPrivacyBody": "No account, no server, no tracking. Children's names and photos stay on this device and never leave it.",
   "onboardingExitTitle": "Exit child mode",
-  "onboardingExitBody": "To return to the editor, press and hold the arrow ← in the top left for 3 seconds.\n\nA normal tap is not enough, so the child cannot exit by mistake."
+  "onboardingExitBody": "To return to the editor, press and hold the arrow ← in the top left for 3 seconds.\n\nA normal tap is not enough, so the child cannot exit by mistake.",
+  "homeCreateFirstProfile": "Create the first profile to get started",
+  "homeNewProfile": "New profile",
+  "homeProfileOptions": "Profile options",
+  "homeAgendasOf": "{name}'s schedules",
+  "homeSettings": "Settings",
+  "homeImportAgenda": "Import schedule (.agviz)",
+  "homeNeeds": "My needs",
+  "homeNeedsSubtitle": "Tap an image to hear the word",
+  "homeEditBoard": "Edit board",
+  "homeNoAgenda": "No schedules. Create one with +",
+  "homeStartChild": "Start for child",
+  "homeNewAgenda": "New schedule",
+  "agendaTypeDaily": "Day",
+  "agendaTypeFirstThen": "First–Then",
+  "agendaTypeSequence": "Sequence"
 }

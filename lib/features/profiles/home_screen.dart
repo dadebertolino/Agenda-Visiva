@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/providers.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
+import '../../l10n/app_localizations.dart';
 import '../builder/agenda_editor_screen.dart';
 import '../comunicazione/bisogni_screen.dart';
 import '../settings/settings_screen.dart';
@@ -20,11 +21,11 @@ final profileAgendasProvider = StreamProvider.family<List<Agenda>, String>(
     (ref, profileId) =>
         ref.watch(agendaRepoProvider).watchByProfile(profileId));
 
-const _typeLabels = {
-  AgendaType.daily: 'Giornata',
-  AgendaType.firstThen: 'Prima–Poi',
-  AgendaType.sequence: 'Sequenza',
-};
+String _typeLabel(AppLocalizations l10n, AgendaType type) => switch (type) {
+      AgendaType.daily => l10n.agendaTypeDaily,
+      AgendaType.firstThen => l10n.agendaTypeFirstThen,
+      AgendaType.sequence => l10n.agendaTypeSequence,
+    };
 
 /// Home adulto: lista profili bambino.
 class HomeScreen extends ConsumerWidget {
@@ -33,9 +34,10 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profiles = ref.watch(profilesProvider).valueOrNull ?? [];
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Agenda Visiva')),
+      appBar: AppBar(title: Text(l10n.appTitle)),
       body: profiles.isEmpty
           ? Center(
               child: Column(
@@ -43,11 +45,11 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   const Icon(Icons.child_care, size: 64, color: Colors.grey),
                   const SizedBox(height: 12),
-                  const Text('Crea il primo profilo per iniziare'),
+                  Text(l10n.homeCreateFirstProfile),
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     icon: const Icon(Icons.add),
-                    label: const Text('Nuovo profilo'),
+                    label: Text(l10n.homeNewProfile),
                     onPressed: () => _createProfile(context, ref),
                   ),
                 ],
@@ -67,7 +69,7 @@ class HomeScreen extends ConsumerWidget {
                       title: Text(p.displayName),
                       trailing: IconButton(
                         icon: const Icon(Icons.more_vert),
-                        tooltip: 'Opzioni profilo',
+                        tooltip: l10n.homeProfileOptions,
                         onPressed: () => _profileOptions(context, ref, p),
                       ),
                       onTap: () => Navigator.of(context).push(
@@ -202,14 +204,15 @@ class ProfileAgendasScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final agendas =
         ref.watch(profileAgendasProvider(profile.id)).valueOrNull ?? [];
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agende di ${profile.displayName}'),
+        title: Text(l10n.homeAgendasOf(profile.displayName)),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Impostazioni',
+            tooltip: l10n.homeSettings,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (_) => SettingsScreen(profileId: profile.id)),
@@ -217,7 +220,7 @@ class ProfileAgendasScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.file_download_outlined),
-            tooltip: 'Importa agenda (.agviz)',
+            tooltip: l10n.homeImportAgenda,
             onPressed: () => _importAgviz(context, ref),
           ),
         ],
@@ -229,11 +232,11 @@ class ProfileAgendasScreen extends ConsumerWidget {
             color: Theme.of(context).colorScheme.secondaryContainer,
             child: ListTile(
               leading: const Icon(Icons.record_voice_over),
-              title: const Text('I miei bisogni'),
-              subtitle: const Text('Tocca un\'immagine, la voce parla'),
+              title: Text(l10n.homeNeeds),
+              subtitle: Text(l10n.homeNeedsSubtitle),
               trailing: IconButton(
                 icon: const Icon(Icons.edit_outlined),
-                tooltip: 'Modifica la tavola',
+                tooltip: l10n.homeEditBoard,
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (_) =>
@@ -248,11 +251,11 @@ class ProfileAgendasScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           if (agendas.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
+            Padding(
+              padding: const EdgeInsets.all(32),
               child: Center(
-                child: Text('Nessuna agenda. Creane una con +',
-                    style: TextStyle(color: Colors.grey)),
+                child: Text(l10n.homeNoAgenda,
+                    style: const TextStyle(color: Colors.grey)),
               ),
             )
           else
@@ -260,10 +263,10 @@ class ProfileAgendasScreen extends ConsumerWidget {
               Card(
                 child: ListTile(
                   title: Text(a.title),
-                  subtitle: Text(_typeLabels[a.type] ?? ''),
+                  subtitle: Text(_typeLabel(l10n, a.type)),
                   trailing: IconButton(
                     icon: const Icon(Icons.play_circle_fill, size: 32),
-                    tooltip: 'Avvia per il bambino',
+                    tooltip: l10n.homeStartChild,
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (_) => PlayerScreen(agendaId: a.id)),
@@ -281,7 +284,7 @@ class ProfileAgendasScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
-        label: const Text('Nuova agenda'),
+        label: Text(l10n.homeNewAgenda),
         onPressed: () => _createAgenda(context, ref),
       ),
     );

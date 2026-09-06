@@ -67,4 +67,51 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get onboardingExitBody =>
       'Durante l\'uso, per tornare all\'editor tieni premuta la freccia ← in alto a sinistra per 3 secondi.\n\nUn tocco normale non basta: così il bambino non esce da solo per sbaglio.';
+
+  @override
+  String get homeCreateFirstProfile => 'Crea il primo profilo per iniziare';
+
+  @override
+  String get homeNewProfile => 'Nuovo profilo';
+
+  @override
+  String get homeProfileOptions => 'Opzioni profilo';
+
+  @override
+  String homeAgendasOf(Object name) {
+    return 'Agende di $name';
+  }
+
+  @override
+  String get homeSettings => 'Impostazioni';
+
+  @override
+  String get homeImportAgenda => 'Importa agenda (.agviz)';
+
+  @override
+  String get homeNeeds => 'I miei bisogni';
+
+  @override
+  String get homeNeedsSubtitle => 'Tocca un\'immagine, la voce parla';
+
+  @override
+  String get homeEditBoard => 'Modifica la tavola';
+
+  @override
+  String get homeNoAgenda => 'Nessuna agenda. Creane una con +';
+
+  @override
+  String get homeStartChild => 'Avvia per il bambino';
+
+  @override
+  String get homeNewAgenda => 'Nuova agenda';
+
+  @override
+  String get agendaTypeDaily => 'Giornata';
+
+  @override
+  String get agendaTypeFirstThen => 'Prima–Poi';
+
+  @override
+  String get agendaTypeSequence => 'Sequenza';
 }

@@ -205,6 +205,96 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Durante l\'uso, per tornare all\'editor tieni premuta la freccia ← in alto a sinistra per 3 secondi.\n\nUn tocco normale non basta: così il bambino non esce da solo per sbaglio.'**
   String get onboardingExitBody;
+
+  /// No description provided for @homeCreateFirstProfile.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea il primo profilo per iniziare'**
+  String get homeCreateFirstProfile;
+
+  /// No description provided for @homeNewProfile.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo profilo'**
+  String get homeNewProfile;
+
+  /// No description provided for @homeProfileOptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Opzioni profilo'**
+  String get homeProfileOptions;
+
+  /// No description provided for @homeAgendasOf.
+  ///
+  /// In it, this message translates to:
+  /// **'Agende di {name}'**
+  String homeAgendasOf(Object name);
+
+  /// No description provided for @homeSettings.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni'**
+  String get homeSettings;
+
+  /// No description provided for @homeImportAgenda.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa agenda (.agviz)'**
+  String get homeImportAgenda;
+
+  /// No description provided for @homeNeeds.
+  ///
+  /// In it, this message translates to:
+  /// **'I miei bisogni'**
+  String get homeNeeds;
+
+  /// No description provided for @homeNeedsSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca un\'immagine, la voce parla'**
+  String get homeNeedsSubtitle;
+
+  /// No description provided for @homeEditBoard.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica la tavola'**
+  String get homeEditBoard;
+
+  /// No description provided for @homeNoAgenda.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna agenda. Creane una con +'**
+  String get homeNoAgenda;
+
+  /// No description provided for @homeStartChild.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia per il bambino'**
+  String get homeStartChild;
+
+  /// No description provided for @homeNewAgenda.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova agenda'**
+  String get homeNewAgenda;
+
+  /// No description provided for @agendaTypeDaily.
+  ///
+  /// In it, this message translates to:
+  /// **'Giornata'**
+  String get agendaTypeDaily;
+
+  /// No description provided for @agendaTypeFirstThen.
+  ///
+  /// In it, this message translates to:
+  /// **'Prima–Poi'**
+  String get agendaTypeFirstThen;
+
+  /// No description provided for @agendaTypeSequence.
+  ///
+  /// In it, this message translates to:
+  /// **'Sequenza'**
+  String get agendaTypeSequence;
 }
 
 class _AppLocalizationsDelegate

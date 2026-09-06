@@ -17,5 +17,20 @@
   "onboardingPrivacyTitle": "I dati restano qui",
   "onboardingPrivacyBody": "Nessun account, nessun server, nessun tracciamento. Nomi e foto dei bambini restano su questo dispositivo e non escono mai da qui.",
   "onboardingExitTitle": "Uscire dalla modalità bambino",
-  "onboardingExitBody": "Durante l'uso, per tornare all'editor tieni premuta la freccia ← in alto a sinistra per 3 secondi.\n\nUn tocco normale non basta: così il bambino non esce da solo per sbaglio."
+  "onboardingExitBody": "Durante l'uso, per tornare all'editor tieni premuta la freccia ← in alto a sinistra per 3 secondi.\n\nUn tocco normale non basta: così il bambino non esce da solo per sbaglio.",
+  "homeCreateFirstProfile": "Crea il primo profilo per iniziare",
+  "homeNewProfile": "Nuovo profilo",
+  "homeProfileOptions": "Opzioni profilo",
+  "homeAgendasOf": "Agende di {name}",
+  "homeSettings": "Impostazioni",
+  "homeImportAgenda": "Importa agenda (.agviz)",
+  "homeNeeds": "I miei bisogni",
+  "homeNeedsSubtitle": "Tocca un'immagine, la voce parla",
+  "homeEditBoard": "Modifica la tavola",
+  "homeNoAgenda": "Nessuna agenda. Creane una con +",
+  "homeStartChild": "Avvia per il bambino",
+  "homeNewAgenda": "Nuova agenda",
+  "agendaTypeDaily": "Giornata",
+  "agendaTypeFirstThen": "Prima–Poi",
+  "agendaTypeSequence": "Sequenza"
 }

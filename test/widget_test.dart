@@ -19,7 +19,7 @@ void main() {
         // (ed evitiamo path_provider, non disponibile nei widget test).
         onboardingDoneProvider.overrideWith((ref) => true),
       ],
-      child: const AgendaVisivaApp(),
+      child: const AgendaVisivaApp(locale: Locale('it')),
     ));
     await tester.pumpAndSettle();
 

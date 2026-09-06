@@ -67,4 +67,52 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingExitBody =>
       'To return to the editor, press and hold the arrow ← in the top left for 3 seconds.\n\nA normal tap is not enough, so the child cannot exit by mistake.';
+
+  @override
+  String get homeCreateFirstProfile =>
+      'Create the first profile to get started';
+
+  @override
+  String get homeNewProfile => 'New profile';
+
+  @override
+  String get homeProfileOptions => 'Profile options';
+
+  @override
+  String homeAgendasOf(Object name) {
+    return '$name\'s schedules';
+  }
+
+  @override
+  String get homeSettings => 'Settings';
+
+  @override
+  String get homeImportAgenda => 'Import schedule (.agviz)';
+
+  @override
+  String get homeNeeds => 'My needs';
+
+  @override
+  String get homeNeedsSubtitle => 'Tap an image to hear the word';
+
+  @override
+  String get homeEditBoard => 'Edit board';
+
+  @override
+  String get homeNoAgenda => 'No schedules. Create one with +';
+
+  @override
+  String get homeStartChild => 'Start for child';
+
+  @override
+  String get homeNewAgenda => 'New schedule';
+
+  @override
+  String get agendaTypeDaily => 'Day';
+
+  @override
+  String get agendaTypeFirstThen => 'First–Then';
+
+  @override
+  String get agendaTypeSequence => 'Sequence';
 }

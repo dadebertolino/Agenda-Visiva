@@ -13,11 +13,14 @@ void main() {
 }
 
 class AgendaVisivaApp extends StatelessWidget {
-  const AgendaVisivaApp({super.key});
+  const AgendaVisivaApp({super.key, this.locale});
+
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: locale,
       onGenerateTitle: (context) =>
           AppLocalizations.of(context)?.appTitle ?? 'Agenda Visiva',
       debugShowCheckedModeBanner: false,
