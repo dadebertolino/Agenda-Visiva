@@ -10,6 +10,7 @@ import '../../core/constants.dart';
 import '../../core/providers.dart';
 import '../../data/db/tables.dart';
 import '../../data/services/arasaac_api.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Risultato della selezione nel picker.
 class PictogramSelection {
@@ -84,23 +85,23 @@ class _PictogramPickerScreenState extends ConsumerState<PictogramPickerScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Ricerca non riuscita. Sei offline? '
-            'Le ricerche già fatte funzionano anche senza rete.';
+        _error = AppLocalizations.of(context)!.pickerOfflineError;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Scegli un pittogramma'),
-          bottom: const TabBar(tabs: [
-            Tab(text: 'ARASAAC'),
-            Tab(text: 'Foto'),
-            Tab(text: 'Base'),
+          title: Text(l10n.pickerTitle),
+          bottom: TabBar(tabs: [
+            Tab(text: l10n.pickerArasaac),
+            Tab(text: l10n.pickerPhoto),
+            Tab(text: l10n.pickerBuiltin),
           ]),
         ),
         body: TabBarView(
@@ -115,16 +116,17 @@ class _PictogramPickerScreenState extends ConsumerState<PictogramPickerScreen> {
   }
 
   Widget _buildArasaacTab() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
           child: TextField(
             autofocus: true,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Cerca (es. colazione, cerchio, bagno)',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: l10n.pickerSearchHint,
+              border: const OutlineInputBorder(),
             ),
             onChanged: _onQueryChanged,
           ),
@@ -143,6 +145,7 @@ class _PictogramPickerScreenState extends ConsumerState<PictogramPickerScreen> {
   }
 
   Widget _buildResults() {
+    final l10n = AppLocalizations.of(context)!;
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) {
       return Center(
@@ -153,12 +156,12 @@ class _PictogramPickerScreenState extends ConsumerState<PictogramPickerScreen> {
       );
     }
     if (_query.isEmpty) {
-      return const Center(
-          child: Text('Scrivi per cercare tra migliaia di pittogrammi',
-              style: TextStyle(color: Colors.grey)));
+        return Center(
+            child: Text(l10n.pickerSearchPrompt,
+              style: const TextStyle(color: Colors.grey)));
     }
     if (_results.isEmpty) {
-      return const Center(child: Text('Nessun risultato'));
+      return Center(child: Text(l10n.pickerNoResults));
     }
     return GridView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -258,6 +261,7 @@ class _PhotoTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -267,22 +271,21 @@ class _PhotoTab extends ConsumerWidget {
           FilledButton.tonalIcon(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 64)),
             icon: const Icon(Icons.photo_library),
-            label: const Text('Scegli dalla galleria'),
+            label: Text(l10n.pickerGallery),
             onPressed: () => _import(context, ref, ImageSource.gallery),
           ),
           const SizedBox(height: 16),
           FilledButton.tonalIcon(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 64)),
             icon: const Icon(Icons.photo_camera),
-            label: const Text('Scatta una foto'),
+            label: Text(l10n.pickerCamera),
             onPressed: () => _import(context, ref, ImageSource.camera),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'La foto resta solo su questo dispositivo. '
-            'Posizione e metadati (EXIF) vengono rimossi automaticamente.',
+          Text(
+            l10n.pickerPhotoPrivacy,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
       ),
@@ -291,6 +294,7 @@ class _PhotoTab extends ConsumerWidget {
 
   Future<void> _import(
       BuildContext context, WidgetRef ref, ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final store = await ref.read(mediaStoreProvider.future);
       final asset = await store.importFrom(source);
@@ -305,8 +309,8 @@ class _PhotoTab extends ConsumerWidget {
       );
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Fotocamera non disponibile su questo dispositivo')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.pickerCameraError)));
     }
   }
 }

@@ -703,6 +703,126 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{start} – {end}'**
   String playerTimeRange(String start, String end);
+
+  /// No description provided for @needsBoardTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'I miei bisogni'**
+  String get needsBoardTitle;
+
+  /// No description provided for @needsBoardEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiedi a un adulto di aggiungere i bisogni dalla matita nella schermata delle agende.'**
+  String get needsBoardEmpty;
+
+  /// No description provided for @needsBoardEditTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'I miei bisogni — modifica'**
+  String get needsBoardEditTitle;
+
+  /// No description provided for @needsBoardEmptyAdult.
+  ///
+  /// In it, this message translates to:
+  /// **'La tavola è vuota'**
+  String get needsBoardEmptyAdult;
+
+  /// No description provided for @needsBoardSeed.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi bisogni di base'**
+  String get needsBoardSeed;
+
+  /// No description provided for @needsBoardAdvice.
+  ///
+  /// In it, this message translates to:
+  /// **'Consiglio: tieni la tavola corta (6-8 bisogni). Poche scelte chiare aiutano più di tante.'**
+  String get needsBoardAdvice;
+
+  /// No description provided for @needsBoardAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get needsBoardAdd;
+
+  /// No description provided for @needsBoardWord.
+  ///
+  /// In it, this message translates to:
+  /// **'Parola da pronunciare'**
+  String get needsBoardWord;
+
+  /// No description provided for @pickerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un pittogramma'**
+  String get pickerTitle;
+
+  /// No description provided for @pickerArasaac.
+  ///
+  /// In it, this message translates to:
+  /// **'ARASAAC'**
+  String get pickerArasaac;
+
+  /// No description provided for @pickerPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto'**
+  String get pickerPhoto;
+
+  /// No description provided for @pickerBuiltin.
+  ///
+  /// In it, this message translates to:
+  /// **'Base'**
+  String get pickerBuiltin;
+
+  /// No description provided for @pickerSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca (es. colazione, cerchio, bagno)'**
+  String get pickerSearchHint;
+
+  /// No description provided for @pickerOfflineError.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca non riuscita. Sei offline? Le ricerche già fatte funzionano anche senza rete.'**
+  String get pickerOfflineError;
+
+  /// No description provided for @pickerSearchPrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi per cercare tra migliaia di pittogrammi'**
+  String get pickerSearchPrompt;
+
+  /// No description provided for @pickerNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato'**
+  String get pickerNoResults;
+
+  /// No description provided for @pickerGallery.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli dalla galleria'**
+  String get pickerGallery;
+
+  /// No description provided for @pickerCamera.
+  ///
+  /// In it, this message translates to:
+  /// **'Scatta una foto'**
+  String get pickerCamera;
+
+  /// No description provided for @pickerPhotoPrivacy.
+  ///
+  /// In it, this message translates to:
+  /// **'La foto resta solo su questo dispositivo. Posizione e metadati (EXIF) vengono rimossi automaticamente.'**
+  String get pickerPhotoPrivacy;
+
+  /// No description provided for @pickerCameraError.
+  ///
+  /// In it, this message translates to:
+  /// **'Fotocamera non disponibile su questo dispositivo'**
+  String get pickerCameraError;
 }
 
 class _AppLocalizationsDelegate

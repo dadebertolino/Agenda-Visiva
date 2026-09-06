@@ -7,6 +7,7 @@ import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/board_repo.dart';
 import '../../domain/profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 import '../pictogram_picker/pictogram_picker.dart';
 
 final boardProvider = StreamProvider.family<List<BoardRow>, String>(
@@ -31,6 +32,7 @@ class BisogniScreen extends ConsumerWidget {
     final settings =
         ref.watch(_profileSettingsProvider(profileId)).valueOrNull ??
             const ProfileSettings();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -46,7 +48,7 @@ class BisogniScreen extends ConsumerWidget {
                   ),
                   const SizedBox(width: 4),
                   Expanded(
-                    child: Text('I miei bisogni',
+                        child: Text(l10n.needsBoardTitle,
                         style: Theme.of(context).textTheme.titleMedium),
                   ),
                 ],
@@ -54,14 +56,13 @@ class BisogniScreen extends ConsumerWidget {
             ),
             Expanded(
               child: rows.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Padding(
-                        padding: EdgeInsets.all(32),
+                        padding: const EdgeInsets.all(32),
                         child: Text(
-                          'Chiedi a un adulto di aggiungere i bisogni '
-                          'dalla matita nella schermata delle agende.',
+                          l10n.needsBoardEmpty,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     )
@@ -149,19 +150,20 @@ class BisogniEditScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final rows = ref.watch(boardProvider(profileId)).valueOrNull ?? [];
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('I miei bisogni — modifica')),
+      appBar: AppBar(title: Text(l10n.needsBoardEditTitle)),
       body: rows.isEmpty
           ? Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('La tavola è vuota'),
+                  Text(l10n.needsBoardEmptyAdult),
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     icon: const Icon(Icons.auto_awesome),
-                    label: const Text('Aggiungi bisogni di base'),
+                    label: Text(l10n.needsBoardSeed),
                     onPressed: () => _seedDefaults(ref),
                   ),
                 ],
@@ -182,19 +184,18 @@ class BisogniEditScreen extends ConsumerWidget {
                           ref.read(boardRepoProvider).remove(r.item.id),
                     ),
                   ),
-                const Padding(
-                  padding: EdgeInsets.all(16),
+                Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Consiglio: tieni la tavola corta (6-8 bisogni). '
-                    'Poche scelte chiare aiutano più di tante.',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    l10n.needsBoardAdvice,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ),
               ],
             ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
-        label: const Text('Aggiungi'),
+        label: Text(l10n.needsBoardAdd),
         onPressed: () => _addNeed(context, ref),
       ),
     );
@@ -213,6 +214,7 @@ class BisogniEditScreen extends ConsumerWidget {
   }
 
   Future<void> _addNeed(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final selection = await showPictogramPicker(context);
     if (selection == null || !context.mounted) return;
 
@@ -220,7 +222,7 @@ class BisogniEditScreen extends ConsumerWidget {
     final label = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Parola da pronunciare'),
+        title: Text(l10n.needsBoardWord),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -230,7 +232,7 @@ class BisogniEditScreen extends ConsumerWidget {
           TextButton(
             onPressed: () =>
                 Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Aggiungi'),
+            child: Text(l10n.needsBoardAdd),
           ),
         ],
       ),

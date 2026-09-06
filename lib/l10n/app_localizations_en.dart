@@ -354,4 +354,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String playerTimeRange(String start, String end) {
     return '$start – $end';
   }
+
+  @override
+  String get needsBoardTitle => 'My needs';
+
+  @override
+  String get needsBoardEmpty =>
+      'Ask an adult to add needs using the pencil on the schedules screen.';
+
+  @override
+  String get needsBoardEditTitle => 'My needs — edit';
+
+  @override
+  String get needsBoardEmptyAdult => 'The board is empty';
+
+  @override
+  String get needsBoardSeed => 'Add basic needs';
+
+  @override
+  String get needsBoardAdvice =>
+      'Tip: keep the board short (6-8 needs). A few clear choices work better than many.';
+
+  @override
+  String get needsBoardAdd => 'Add';
+
+  @override
+  String get needsBoardWord => 'Word to speak';
+
+  @override
+  String get pickerTitle => 'Choose a pictogram';
+
+  @override
+  String get pickerArasaac => 'ARASAAC';
+
+  @override
+  String get pickerPhoto => 'Photo';
+
+  @override
+  String get pickerBuiltin => 'Built-in';
+
+  @override
+  String get pickerSearchHint => 'Search (e.g. breakfast, circle, bathroom)';
+
+  @override
+  String get pickerOfflineError =>
+      'Search failed. Are you offline? Previous searches still work offline.';
+
+  @override
+  String get pickerSearchPrompt => 'Search among thousands of pictograms';
+
+  @override
+  String get pickerNoResults => 'No results';
+
+  @override
+  String get pickerGallery => 'Choose from gallery';
+
+  @override
+  String get pickerCamera => 'Take a photo';
+
+  @override
+  String get pickerPhotoPrivacy =>
+      'The photo stays on this device. Location and metadata (EXIF) are removed automatically.';
+
+  @override
+  String get pickerCameraError => 'Camera unavailable on this device';
 }

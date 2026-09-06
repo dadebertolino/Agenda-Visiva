@@ -352,4 +352,70 @@ class AppLocalizationsIt extends AppLocalizations {
   String playerTimeRange(String start, String end) {
     return '$start – $end';
   }
+
+  @override
+  String get needsBoardTitle => 'I miei bisogni';
+
+  @override
+  String get needsBoardEmpty =>
+      'Chiedi a un adulto di aggiungere i bisogni dalla matita nella schermata delle agende.';
+
+  @override
+  String get needsBoardEditTitle => 'I miei bisogni — modifica';
+
+  @override
+  String get needsBoardEmptyAdult => 'La tavola è vuota';
+
+  @override
+  String get needsBoardSeed => 'Aggiungi bisogni di base';
+
+  @override
+  String get needsBoardAdvice =>
+      'Consiglio: tieni la tavola corta (6-8 bisogni). Poche scelte chiare aiutano più di tante.';
+
+  @override
+  String get needsBoardAdd => 'Aggiungi';
+
+  @override
+  String get needsBoardWord => 'Parola da pronunciare';
+
+  @override
+  String get pickerTitle => 'Scegli un pittogramma';
+
+  @override
+  String get pickerArasaac => 'ARASAAC';
+
+  @override
+  String get pickerPhoto => 'Foto';
+
+  @override
+  String get pickerBuiltin => 'Base';
+
+  @override
+  String get pickerSearchHint => 'Cerca (es. colazione, cerchio, bagno)';
+
+  @override
+  String get pickerOfflineError =>
+      'Ricerca non riuscita. Sei offline? Le ricerche già fatte funzionano anche senza rete.';
+
+  @override
+  String get pickerSearchPrompt =>
+      'Scrivi per cercare tra migliaia di pittogrammi';
+
+  @override
+  String get pickerNoResults => 'Nessun risultato';
+
+  @override
+  String get pickerGallery => 'Scegli dalla galleria';
+
+  @override
+  String get pickerCamera => 'Scatta una foto';
+
+  @override
+  String get pickerPhotoPrivacy =>
+      'La foto resta solo su questo dispositivo. Posizione e metadati (EXIF) vengono rimossi automaticamente.';
+
+  @override
+  String get pickerCameraError =>
+      'Fotocamera non disponibile su questo dispositivo';
 }
