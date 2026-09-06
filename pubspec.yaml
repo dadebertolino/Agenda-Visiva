@@ -11,6 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
   # State management
   flutter_riverpod: ^2.5.1
@@ -61,6 +64,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.1
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/pictograms/builtin/
