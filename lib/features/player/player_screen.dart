@@ -32,6 +32,16 @@ class PlayerScreen extends ConsumerWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final settings = ref.watch(agendaSettingsProvider(agendaId)).valueOrNull ??
+      const ProfileSettings();
+    final baseTheme = Theme.of(context);
+    final playerTheme = settings.highContrast
+      ? baseTheme.copyWith(
+        colorScheme: baseTheme.brightness == Brightness.dark
+          ? const ColorScheme.highContrastDark()
+          : const ColorScheme.highContrastLight(),
+        )
+      : baseTheme;
     final currentIndex = items.indexWhere((r) => !r.item.isCompleted);
     final done = currentIndex == -1 && items.isNotEmpty;
 
@@ -41,23 +51,26 @@ class PlayerScreen extends ConsumerWidget {
         // Back di sistema/gesto: non esce, ma spiega come si fa.
         if (!didPop) _showExitHint(context);
       },
-      child: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              _TopBar(title: agenda.title, profileId: agenda.profileId),
-              Expanded(
-                child: done
-                    ? _EndView(agendaId: agendaId)
-                    : items.isEmpty
-                        ? const Center(child: Text('Agenda vuota'))
-                        : agenda.type == AgendaType.firstThen
-                            ? _FirstThenView(
-                                items: items, currentIndex: currentIndex)
-                            : _DailyView(
-                                items: items, currentIndex: currentIndex),
-              ),
-            ],
+      child: Theme(
+        data: playerTheme,
+        child: Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                _TopBar(title: agenda.title, profileId: agenda.profileId),
+                Expanded(
+                  child: done
+                      ? _EndView(agendaId: agendaId)
+                      : items.isEmpty
+                          ? const Center(child: Text('Agenda vuota'))
+                          : agenda.type == AgendaType.firstThen
+                              ? _FirstThenView(
+                                  items: items, currentIndex: currentIndex)
+                              : _DailyView(
+                                  items: items, currentIndex: currentIndex),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -391,8 +404,12 @@ class _CurrentCard extends ConsumerWidget {
         _DoneButton(
           key: ValueKey('done-${row.item.id}'),
           width: compact ? 140 : 200,
-          onCompleted: () =>
-              ref.read(agendaRepoProvider).completeItem(row.item.id),
+          onCompleted: () {
+            if (settings.sounds) {
+              unawaited(SystemSound.play(SystemSoundType.click));
+            }
+            ref.read(agendaRepoProvider).completeItem(row.item.id);
+          },
         ),
       ],
     );
