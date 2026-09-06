@@ -823,6 +823,216 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Fotocamera non disponibile su questo dispositivo'**
   String get pickerCameraError;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni — {name}'**
+  String settingsTitle(String name);
+
+  /// No description provided for @settingsChildMode.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità bambino'**
+  String get settingsChildMode;
+
+  /// No description provided for @settingsVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce (leggi le attività)'**
+  String get settingsVoice;
+
+  /// No description provided for @settingsVoiceSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca il pittogramma per ascoltare'**
+  String get settingsVoiceSubtitle;
+
+  /// No description provided for @settingsSounds.
+  ///
+  /// In it, this message translates to:
+  /// **'Suoni di conferma'**
+  String get settingsSounds;
+
+  /// No description provided for @settingsContrast.
+  ///
+  /// In it, this message translates to:
+  /// **'Alto contrasto'**
+  String get settingsContrast;
+
+  /// No description provided for @settingsCardSize.
+  ///
+  /// In it, this message translates to:
+  /// **'Dimensione pittogrammi'**
+  String get settingsCardSize;
+
+  /// No description provided for @settingsTimer.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer visivo'**
+  String get settingsTimer;
+
+  /// No description provided for @settingsTimerSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Barra che si riempie o anello che si svuota'**
+  String get settingsTimerSubtitle;
+
+  /// No description provided for @settingsBar.
+  ///
+  /// In it, this message translates to:
+  /// **'Barra'**
+  String get settingsBar;
+
+  /// No description provided for @settingsRing.
+  ///
+  /// In it, this message translates to:
+  /// **'Anello'**
+  String get settingsRing;
+
+  /// No description provided for @settingsTimeline.
+  ///
+  /// In it, this message translates to:
+  /// **'Linea attività'**
+  String get settingsTimeline;
+
+  /// No description provided for @settingsTimelineSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra cosa resta da fare o cosa è già fatto'**
+  String get settingsTimelineSubtitle;
+
+  /// No description provided for @settingsRemaining.
+  ///
+  /// In it, this message translates to:
+  /// **'Da fare'**
+  String get settingsRemaining;
+
+  /// No description provided for @settingsHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Fatte'**
+  String get settingsHistory;
+
+  /// No description provided for @settingsShowTimes.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra orari'**
+  String get settingsShowTimes;
+
+  /// No description provided for @settingsShowTimesSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Orario di inizio e fine sotto l\'attività, se impostati'**
+  String get settingsShowTimesSubtitle;
+
+  /// No description provided for @settingsShowBadges.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra dove e con chi'**
+  String get settingsShowBadges;
+
+  /// No description provided for @settingsShowBadgesSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo e persona sotto l\'attività, se impostati'**
+  String get settingsShowBadgesSubtitle;
+
+  /// No description provided for @settingsInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni'**
+  String get settingsInfo;
+
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In it, this message translates to:
+  /// **'Privacy'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsPrivacySubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti i dati restano su questo dispositivo'**
+  String get settingsPrivacySubtitle;
+
+  /// No description provided for @settingsPrivacyBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Agenda Visiva funziona completamente offline.\n\nNomi, foto e agende non lasciano mai questo dispositivo: nessun account, nessun server, nessun tracciamento, nessuna pubblicità.\n\nLe foto importate vengono ridimensionate e ripulite dai metadati (inclusa la posizione GPS).\n\nLa condivisione di un\'agenda (.agviz o PDF) avviene solo quando la avvii tu, con gli strumenti del tuo dispositivo. I file .agviz non contengono mai il nome del bambino.'**
+  String get settingsPrivacyBody;
+
+  /// No description provided for @settingsCredits.
+  ///
+  /// In it, this message translates to:
+  /// **'Crediti pittogrammi'**
+  String get settingsCredits;
+
+  /// No description provided for @settingsCreditsSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'ARASAAC'**
+  String get settingsCreditsSubtitle;
+
+  /// No description provided for @settingsCreditsBody.
+  ///
+  /// In it, this message translates to:
+  /// **'{attribution}.\n\nI pittogrammi ARASAAC sono utilizzabili solo per scopi non commerciali e con questa attribuzione.'**
+  String settingsCreditsBody(String attribution);
+
+  /// No description provided for @settingsLicense.
+  ///
+  /// In it, this message translates to:
+  /// **'Licenza e codice sorgente'**
+  String get settingsLicense;
+
+  /// No description provided for @settingsLicenseSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice pubblico su GitHub — PolyForm Noncommercial 1.0.0'**
+  String get settingsLicenseSubtitle;
+
+  /// No description provided for @settingsSourceTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice sorgente pubblico'**
+  String get settingsSourceTitle;
+
+  /// No description provided for @settingsSourceBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Il codice di Agenda Visiva è pubblico, consultabile e gratuito per sempre. Chiunque può verificare come funziona e che i dati non lasciano mai il dispositivo.\n\nL\'uso commerciale è vietato (licenza PolyForm Noncommercial 1.0.0).'**
+  String get settingsSourceBody;
+
+  /// No description provided for @settingsClose.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiudi'**
+  String get settingsClose;
+
+  /// No description provided for @settingsOpenGithub.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri GitHub'**
+  String get settingsOpenGithub;
+
+  /// No description provided for @settingsAuthor.
+  ///
+  /// In it, this message translates to:
+  /// **'Autore'**
+  String get settingsAuthor;
+
+  /// No description provided for @settingsAuthorBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Made by Prof. Davide Bertolino\nPer contatti: info@davidebertolino.it'**
+  String get settingsAuthorBody;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In it, this message translates to:
+  /// **'Versione'**
+  String get settingsVersion;
 }
 
 class _AppLocalizationsDelegate

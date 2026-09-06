@@ -7,6 +7,7 @@ import '../../core/providers.dart';
 import '../../data/db/database.dart';
 import '../../data/services/arasaac_api.dart';
 import '../../domain/profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 
 final _profileProvider = StreamProvider.family<Profile?, String>(
     (ref, id) => ref.watch(profileRepoProvider).watchById(id));
@@ -24,34 +25,35 @@ class SettingsScreen extends ConsumerWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final settings = ProfileSettings.fromJsonString(profile.settings);
+    final l10n = AppLocalizations.of(context)!;
 
     Future<void> save(ProfileSettings next) => ref
         .read(profileRepoProvider)
         .updateSettings(profileId, next.toJsonString());
 
     return Scaffold(
-      appBar: AppBar(title: Text('Impostazioni — ${profile.displayName}')),
+      appBar: AppBar(title: Text(l10n.settingsTitle(profile.displayName))),
       body: ListView(
         children: [
-          const _SectionHeader('Modalità bambino'),
+          _SectionHeader(l10n.settingsChildMode),
           SwitchListTile(
-            title: const Text('Voce (leggi le attività)'),
-            subtitle: const Text('Tocca il pittogramma per ascoltare'),
+            title: Text(l10n.settingsVoice),
+            subtitle: Text(l10n.settingsVoiceSubtitle),
             value: settings.tts,
             onChanged: (v) => save(settings.copyWith(tts: v)),
           ),
           SwitchListTile(
-            title: const Text('Suoni di conferma'),
+            title: Text(l10n.settingsSounds),
             value: settings.sounds,
             onChanged: (v) => save(settings.copyWith(sounds: v)),
           ),
           SwitchListTile(
-            title: const Text('Alto contrasto'),
+            title: Text(l10n.settingsContrast),
             value: settings.highContrast,
             onChanged: (v) => save(settings.copyWith(highContrast: v)),
           ),
           ListTile(
-            title: const Text('Dimensione pittogrammi'),
+            title: Text(l10n.settingsCardSize),
             trailing: SegmentedButton<String>(
               segments: const [
                 ButtonSegment(value: 's', label: Text('S')),
@@ -64,12 +66,12 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Text('Timer visivo'),
-            subtitle: const Text('Barra che si riempie o anello che si svuota'),
+            title: Text(l10n.settingsTimer),
+            subtitle: Text(l10n.settingsTimerSubtitle),
             trailing: SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'linear', label: Text('Barra')),
-                ButtonSegment(value: 'circular', label: Text('Anello')),
+              segments: [
+                ButtonSegment(value: 'linear', label: Text(l10n.settingsBar)),
+                ButtonSegment(value: 'circular', label: Text(l10n.settingsRing)),
               ],
               selected: {settings.timerStyle},
               onSelectionChanged: (s) =>
@@ -77,13 +79,12 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Text('Linea attività'),
-            subtitle:
-                const Text('Mostra cosa resta da fare o cosa è già fatto'),
+            title: Text(l10n.settingsTimeline),
+            subtitle: Text(l10n.settingsTimelineSubtitle),
             trailing: SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'remaining', label: Text('Da fare')),
-                ButtonSegment(value: 'history', label: Text('Fatte')),
+              segments: [
+                ButtonSegment(value: 'remaining', label: Text(l10n.settingsRemaining)),
+                ButtonSegment(value: 'history', label: Text(l10n.settingsHistory)),
               ],
               selected: {settings.timelineMode},
               onSelectionChanged: (s) =>
@@ -91,75 +92,58 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           SwitchListTile(
-            title: const Text('Mostra orari'),
-            subtitle: const Text(
-                'Orario di inizio e fine sotto l\'attività, se impostati'),
+            title: Text(l10n.settingsShowTimes),
+            subtitle: Text(l10n.settingsShowTimesSubtitle),
             value: settings.showTimes,
             onChanged: (v) => save(settings.copyWith(showTimes: v)),
           ),
           SwitchListTile(
-            title: const Text('Mostra dove e con chi'),
-            subtitle:
-                const Text('Luogo e persona sotto l\'attività, se impostati'),
+            title: Text(l10n.settingsShowBadges),
+            subtitle: Text(l10n.settingsShowBadgesSubtitle),
             value: settings.showBadges,
             onChanged: (v) => save(settings.copyWith(showBadges: v)),
           ),
           const Divider(),
-          const _SectionHeader('Informazioni'),
+          _SectionHeader(l10n.settingsInfo),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('Privacy'),
-            subtitle: const Text('Tutti i dati restano su questo dispositivo'),
+            title: Text(l10n.settingsPrivacy),
+            subtitle: Text(l10n.settingsPrivacySubtitle),
             onTap: () => _showInfo(
               context,
-              'Privacy',
-              'Agenda Visiva funziona completamente offline.\n\n'
-                  'Nomi, foto e agende non lasciano mai questo dispositivo: '
-                  'nessun account, nessun server, nessun tracciamento, '
-                  'nessuna pubblicità.\n\n'
-                  'Le foto importate vengono ridimensionate e ripulite dai '
-                  'metadati (inclusa la posizione GPS).\n\n'
-                  'La condivisione di un\'agenda (.agviz o PDF) avviene solo '
-                  'quando la avvii tu, con gli strumenti del tuo dispositivo. '
-                  'I file .agviz non contengono mai il nome del bambino.',
+                l10n.settingsPrivacy,
+                l10n.settingsPrivacyBody,
             ),
           ),
           ListTile(
             leading: const Icon(Icons.image_outlined),
-            title: const Text('Crediti pittogrammi'),
-            subtitle: const Text('ARASAAC'),
+            title: Text(l10n.settingsCredits),
+            subtitle: Text(l10n.settingsCreditsSubtitle),
             onTap: () => _showInfo(
               context,
-              'Crediti pittogrammi',
-              '$arasaacAttribution.\n\n'
-                  'I pittogrammi ARASAAC sono utilizzabili solo per scopi '
-                  'non commerciali e con questa attribuzione.',
+                l10n.settingsCredits,
+                l10n.settingsCreditsBody(arasaacAttribution),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.code),
-            title: const Text('Licenza e codice sorgente'),
-            subtitle: const Text(
-                'Codice pubblico su GitHub — PolyForm Noncommercial 1.0.0'),
+            title: Text(l10n.settingsLicense),
+            subtitle: Text(l10n.settingsLicenseSubtitle),
             onTap: () => showDialog<void>(
               context: context,
               builder: (dialogContext) => AlertDialog(
-                title: const Text('Codice sorgente pubblico'),
-                content: const Text(
-                  'Il codice di Agenda Visiva è pubblico, consultabile e '
-                  'gratuito per sempre. Chiunque può verificare come '
-                  'funziona e che i dati non lasciano mai il dispositivo.\n\n'
-                  'L\'uso commerciale è vietato '
-                  '(licenza PolyForm Noncommercial 1.0.0).',
+                title: Text(l10n.settingsSourceTitle),
+                content: Text(
+                  l10n.settingsSourceBody,
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('Chiudi'),
+                    child: Text(l10n.settingsClose),
                   ),
                   FilledButton.icon(
                     icon: const Icon(Icons.open_in_new, size: 18),
-                    label: const Text('Apri GitHub'),
+                    label: Text(l10n.settingsOpenGithub),
                     onPressed: () => launchUrl(
                       Uri.parse(
                           'https://github.com/dadebertolino/Agenda-Visiva'),
@@ -170,17 +154,16 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const ListTile(
-            leading: Icon(Icons.person_outline),
-            title: Text('Autore'),
-            subtitle: Text('Made by Prof. Davide Bertolino\n'
-                'Per contatti: info@davidebertolino.it'),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: Text(l10n.settingsAuthor),
+            subtitle: Text(l10n.settingsAuthorBody),
             isThreeLine: true,
           ),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('Versione'),
-            subtitle: Text(K.appVersion),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: Text(l10n.settingsVersion),
+            subtitle: const Text(K.appVersion),
           ),
           const SizedBox(height: 24),
         ],
@@ -197,7 +180,7 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Chiudi'),
+            child: Text(AppLocalizations.of(context)!.settingsClose),
           ),
         ],
       ),

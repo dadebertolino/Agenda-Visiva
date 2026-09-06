@@ -418,4 +418,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickerCameraError => 'Camera unavailable on this device';
+
+  @override
+  String settingsTitle(String name) {
+    return 'Settings — $name';
+  }
+
+  @override
+  String get settingsChildMode => 'Child mode';
+
+  @override
+  String get settingsVoice => 'Voice (read activities aloud)';
+
+  @override
+  String get settingsVoiceSubtitle => 'Tap the pictogram to listen';
+
+  @override
+  String get settingsSounds => 'Confirmation sounds';
+
+  @override
+  String get settingsContrast => 'High contrast';
+
+  @override
+  String get settingsCardSize => 'Pictogram size';
+
+  @override
+  String get settingsTimer => 'Visual timer';
+
+  @override
+  String get settingsTimerSubtitle => 'Bar filling up or ring emptying';
+
+  @override
+  String get settingsBar => 'Bar';
+
+  @override
+  String get settingsRing => 'Ring';
+
+  @override
+  String get settingsTimeline => 'Activity line';
+
+  @override
+  String get settingsTimelineSubtitle =>
+      'Show what remains or what is completed';
+
+  @override
+  String get settingsRemaining => 'To do';
+
+  @override
+  String get settingsHistory => 'Done';
+
+  @override
+  String get settingsShowTimes => 'Show times';
+
+  @override
+  String get settingsShowTimesSubtitle =>
+      'Start and end time below the activity, when set';
+
+  @override
+  String get settingsShowBadges => 'Show where and with whom';
+
+  @override
+  String get settingsShowBadgesSubtitle =>
+      'Place and person below the activity, when set';
+
+  @override
+  String get settingsInfo => 'Information';
+
+  @override
+  String get settingsPrivacy => 'Privacy';
+
+  @override
+  String get settingsPrivacySubtitle => 'All data stays on this device';
+
+  @override
+  String get settingsPrivacyBody =>
+      'Visual Schedule works completely offline.\n\nChildren\'s names, photos and schedules never leave this device: no account, no server, no tracking, no advertising.\n\nImported photos are resized and stripped of metadata (including GPS location).\n\nSharing a schedule (.agviz or PDF) happens only when you start it using your device\'s tools. .agviz files never contain the child\'s name.';
+
+  @override
+  String get settingsCredits => 'Pictogram credits';
+
+  @override
+  String get settingsCreditsSubtitle => 'ARASAAC';
+
+  @override
+  String settingsCreditsBody(String attribution) {
+    return '$attribution.\n\nARASAAC pictograms may be used only for non-commercial purposes and with this attribution.';
+  }
+
+  @override
+  String get settingsLicense => 'License and source code';
+
+  @override
+  String get settingsLicenseSubtitle =>
+      'Public code on GitHub — PolyForm Noncommercial 1.0.0';
+
+  @override
+  String get settingsSourceTitle => 'Public source code';
+
+  @override
+  String get settingsSourceBody =>
+      'The Visual Schedule code is public, available for inspection and free forever. Anyone can verify how it works and that data never leaves the device.\n\nCommercial use is prohibited (PolyForm Noncommercial 1.0.0 license).';
+
+  @override
+  String get settingsClose => 'Close';
+
+  @override
+  String get settingsOpenGithub => 'Open GitHub';
+
+  @override
+  String get settingsAuthor => 'Author';
+
+  @override
+  String get settingsAuthorBody =>
+      'Made by Prof. Davide Bertolino\nContact: info@davidebertolino.it';
+
+  @override
+  String get settingsVersion => 'Version';
 }

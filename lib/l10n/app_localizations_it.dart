@@ -418,4 +418,122 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get pickerCameraError =>
       'Fotocamera non disponibile su questo dispositivo';
+
+  @override
+  String settingsTitle(String name) {
+    return 'Impostazioni — $name';
+  }
+
+  @override
+  String get settingsChildMode => 'Modalità bambino';
+
+  @override
+  String get settingsVoice => 'Voce (leggi le attività)';
+
+  @override
+  String get settingsVoiceSubtitle => 'Tocca il pittogramma per ascoltare';
+
+  @override
+  String get settingsSounds => 'Suoni di conferma';
+
+  @override
+  String get settingsContrast => 'Alto contrasto';
+
+  @override
+  String get settingsCardSize => 'Dimensione pittogrammi';
+
+  @override
+  String get settingsTimer => 'Timer visivo';
+
+  @override
+  String get settingsTimerSubtitle =>
+      'Barra che si riempie o anello che si svuota';
+
+  @override
+  String get settingsBar => 'Barra';
+
+  @override
+  String get settingsRing => 'Anello';
+
+  @override
+  String get settingsTimeline => 'Linea attività';
+
+  @override
+  String get settingsTimelineSubtitle =>
+      'Mostra cosa resta da fare o cosa è già fatto';
+
+  @override
+  String get settingsRemaining => 'Da fare';
+
+  @override
+  String get settingsHistory => 'Fatte';
+
+  @override
+  String get settingsShowTimes => 'Mostra orari';
+
+  @override
+  String get settingsShowTimesSubtitle =>
+      'Orario di inizio e fine sotto l\'attività, se impostati';
+
+  @override
+  String get settingsShowBadges => 'Mostra dove e con chi';
+
+  @override
+  String get settingsShowBadgesSubtitle =>
+      'Luogo e persona sotto l\'attività, se impostati';
+
+  @override
+  String get settingsInfo => 'Informazioni';
+
+  @override
+  String get settingsPrivacy => 'Privacy';
+
+  @override
+  String get settingsPrivacySubtitle =>
+      'Tutti i dati restano su questo dispositivo';
+
+  @override
+  String get settingsPrivacyBody =>
+      'Agenda Visiva funziona completamente offline.\n\nNomi, foto e agende non lasciano mai questo dispositivo: nessun account, nessun server, nessun tracciamento, nessuna pubblicità.\n\nLe foto importate vengono ridimensionate e ripulite dai metadati (inclusa la posizione GPS).\n\nLa condivisione di un\'agenda (.agviz o PDF) avviene solo quando la avvii tu, con gli strumenti del tuo dispositivo. I file .agviz non contengono mai il nome del bambino.';
+
+  @override
+  String get settingsCredits => 'Crediti pittogrammi';
+
+  @override
+  String get settingsCreditsSubtitle => 'ARASAAC';
+
+  @override
+  String settingsCreditsBody(String attribution) {
+    return '$attribution.\n\nI pittogrammi ARASAAC sono utilizzabili solo per scopi non commerciali e con questa attribuzione.';
+  }
+
+  @override
+  String get settingsLicense => 'Licenza e codice sorgente';
+
+  @override
+  String get settingsLicenseSubtitle =>
+      'Codice pubblico su GitHub — PolyForm Noncommercial 1.0.0';
+
+  @override
+  String get settingsSourceTitle => 'Codice sorgente pubblico';
+
+  @override
+  String get settingsSourceBody =>
+      'Il codice di Agenda Visiva è pubblico, consultabile e gratuito per sempre. Chiunque può verificare come funziona e che i dati non lasciano mai il dispositivo.\n\nL\'uso commerciale è vietato (licenza PolyForm Noncommercial 1.0.0).';
+
+  @override
+  String get settingsClose => 'Chiudi';
+
+  @override
+  String get settingsOpenGithub => 'Apri GitHub';
+
+  @override
+  String get settingsAuthor => 'Autore';
+
+  @override
+  String get settingsAuthorBody =>
+      'Made by Prof. Davide Bertolino\nPer contatti: info@davidebertolino.it';
+
+  @override
+  String get settingsVersion => 'Versione';
 }
