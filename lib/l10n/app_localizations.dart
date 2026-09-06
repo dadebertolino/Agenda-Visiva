@@ -103,6 +103,108 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Agenda Visiva'**
   String get appTitle;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In it, this message translates to:
+  /// **'Salta'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingStart.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia'**
+  String get onboardingStart;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In it, this message translates to:
+  /// **'Avanti'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingCreateTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea agende visive'**
+  String get onboardingCreateTitle;
+
+  /// No description provided for @onboardingCreateBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Accompagna la giornata del bambino con immagini chiare, una attività dopo l\'altra: meno ansia nei passaggi, più autonomia.'**
+  String get onboardingCreateBody;
+
+  /// No description provided for @onboardingHowTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Come funziona'**
+  String get onboardingHowTitle;
+
+  /// No description provided for @onboardingHowBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Tre passi semplici per iniziare.'**
+  String get onboardingHowBody;
+
+  /// No description provided for @onboardingCreateProfile.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea un profilo'**
+  String get onboardingCreateProfile;
+
+  /// No description provided for @onboardingCreateProfileBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Un bambino, un profilo. Basta il nome.'**
+  String get onboardingCreateProfileBody;
+
+  /// No description provided for @onboardingAddActivities.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi le attività'**
+  String get onboardingAddActivities;
+
+  /// No description provided for @onboardingAddActivitiesBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli i pittogrammi ARASAAC o usa le tue foto.'**
+  String get onboardingAddActivitiesBody;
+
+  /// No description provided for @onboardingChildMode.
+  ///
+  /// In it, this message translates to:
+  /// **'Passa alla modalità bambino'**
+  String get onboardingChildMode;
+
+  /// No description provided for @onboardingChildModeBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Schermo grande, una cosa alla volta, spunta \"Fatto\".'**
+  String get onboardingChildModeBody;
+
+  /// No description provided for @onboardingPrivacyTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'I dati restano qui'**
+  String get onboardingPrivacyTitle;
+
+  /// No description provided for @onboardingPrivacyBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun account, nessun server, nessun tracciamento. Nomi e foto dei bambini restano su questo dispositivo e non escono mai da qui.'**
+  String get onboardingPrivacyBody;
+
+  /// No description provided for @onboardingExitTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Uscire dalla modalità bambino'**
+  String get onboardingExitTitle;
+
+  /// No description provided for @onboardingExitBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Durante l\'uso, per tornare all\'editor tieni premuta la freccia ← in alto a sinistra per 3 secondi.\n\nUn tocco normale non basta: così il bambino non esce da solo per sbaglio.'**
+  String get onboardingExitBody;
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,21 @@
 {
   "@@locale": "en",
-  "appTitle": "Visual Schedule"
+  "appTitle": "Visual Schedule",
+  "onboardingSkip": "Skip",
+  "onboardingStart": "Start",
+  "onboardingNext": "Next",
+  "onboardingCreateTitle": "Create visual schedules",
+  "onboardingCreateBody": "Guide the child's day with clear images, one activity after another: less anxiety during transitions, more independence.",
+  "onboardingHowTitle": "How it works",
+  "onboardingHowBody": "Three simple steps to get started.",
+  "onboardingCreateProfile": "Create a profile",
+  "onboardingCreateProfileBody": "One child, one profile. Just the name.",
+  "onboardingAddActivities": "Add activities",
+  "onboardingAddActivitiesBody": "Choose ARASAAC pictograms or use your own photos.",
+  "onboardingChildMode": "Switch to child mode",
+  "onboardingChildModeBody": "Large screen, one thing at a time, tap \"Done\".",
+  "onboardingPrivacyTitle": "Your data stays here",
+  "onboardingPrivacyBody": "No account, no server, no tracking. Children's names and photos stay on this device and never leave it.",
+  "onboardingExitTitle": "Exit child mode",
+  "onboardingExitBody": "To return to the editor, press and hold the arrow ← in the top left for 3 seconds.\n\nA normal tap is not enough, so the child cannot exit by mistake."
 }

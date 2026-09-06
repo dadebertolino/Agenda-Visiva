@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'onboarding_service.dart';
 
 /// Introduzione al primo avvio. Quattro schermate: cos'è, come funziona,
@@ -20,44 +21,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _controller = PageController();
   int _page = 0;
 
-  static const _pages = <_OnboardingPage>[
+  List<_OnboardingPage> _pages(AppLocalizations l10n) => [
     _OnboardingPage(
       icon: Icons.calendar_view_day_rounded,
-      title: 'Crea agende visive',
-      body: 'Accompagna la giornata del bambino con immagini chiare, '
-          'una attività dopo l\'altra: meno ansia nei passaggi, più autonomia.',
+      title: l10n.onboardingCreateTitle,
+      body: l10n.onboardingCreateBody,
     ),
     _OnboardingPage(
       icon: Icons.route_rounded,
-      title: 'Come funziona',
-      body: 'Tre passi semplici per iniziare.',
+      title: l10n.onboardingHowTitle,
+      body: l10n.onboardingHowBody,
       steps: [
-        _Step(Icons.child_care_rounded, 'Crea un profilo',
-            'Un bambino, un profilo. Basta il nome.'),
-        _Step(Icons.add_photo_alternate_rounded, 'Aggiungi le attività',
-            'Scegli i pittogrammi ARASAAC o usa le tue foto.'),
-        _Step(Icons.play_circle_fill_rounded, 'Passa alla modalità bambino',
-            'Schermo grande, una cosa alla volta, spunta "Fatto".'),
+        _Step(Icons.child_care_rounded, l10n.onboardingCreateProfile,
+            l10n.onboardingCreateProfileBody),
+        _Step(Icons.add_photo_alternate_rounded, l10n.onboardingAddActivities,
+            l10n.onboardingAddActivitiesBody),
+        _Step(Icons.play_circle_fill_rounded, l10n.onboardingChildMode,
+            l10n.onboardingChildModeBody),
       ],
     ),
     _OnboardingPage(
       icon: Icons.phonelink_lock_rounded,
-      title: 'I dati restano qui',
-      body: 'Nessun account, nessun server, nessun tracciamento. '
-          'Nomi e foto dei bambini restano su questo dispositivo e non '
-          'escono mai da qui.',
+      title: l10n.onboardingPrivacyTitle,
+      body: l10n.onboardingPrivacyBody,
     ),
     _OnboardingPage(
       icon: Icons.back_hand_rounded,
-      title: 'Uscire dalla modalità bambino',
-      body: 'Durante l\'uso, per tornare all\'editor tieni premuta la '
-          'freccia ← in alto a sinistra per 3 secondi.\n\n'
-          'Un tocco normale non basta: così il bambino non esce da solo '
-          'per sbaglio.',
+      title: l10n.onboardingExitTitle,
+      body: l10n.onboardingExitBody,
     ),
   ];
 
-  bool get _isLast => _page == _pages.length - 1;
+  bool get _isLast => _page == 3;
 
   Future<void> _finish() async {
     final service = await ref.read(onboardingServiceProvider.future);
@@ -85,6 +80,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final pages = _pages(l10n);
 
     return Scaffold(
       body: SafeArea(
@@ -97,7 +94,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 duration: const Duration(milliseconds: 200),
                 child: TextButton(
                   onPressed: _isLast ? null : _finish,
-                  child: const Text('Salta'),
+                  child: Text(l10n.onboardingSkip),
                 ),
               ),
             ),
@@ -105,14 +102,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: PageView.builder(
                 controller: _controller,
                 onPageChanged: (i) => setState(() => _page = i),
-                itemCount: _pages.length,
-                itemBuilder: (context, i) => _PageView(page: _pages[i]),
+                itemCount: pages.length,
+                itemBuilder: (context, i) => _PageView(page: pages[i]),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var i = 0; i < _pages.length; i++)
+                for (var i = 0; i < pages.length; i++)
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -137,7 +134,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                   onPressed: _next,
-                  child: Text(_isLast ? 'Inizia' : 'Avanti'),
+                    child: Text(
+                      _isLast ? l10n.onboardingStart : l10n.onboardingNext),
                 ),
               ),
             ),
