@@ -100,4 +100,17 @@
   "@builderTimerSummary": {"placeholders": {"minutes": {"type": "num"}}},
   "@builderEndOnly": {"placeholders": {"end": {"type": "String"}}},
   "@builderTimeRange": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
+  ,"playerNeeds": "My needs",
+  "playerExitHint": "To exit, press and hold the arrow for 3 seconds",
+  "playerEmpty": "Empty schedule",
+  "playerAfter": "Next: ",
+  "playerNow": "Now",
+  "playerDone": "Done",
+  "playerDoneExclamation": "Done!",
+  "playerFinished": "You're finished!",
+  "playerRestart": "Start again",
+  "playerEndOnly": "– {end}",
+  "playerTimeRange": "{start} – {end}",
+  "@playerEndOnly": {"placeholders": {"end": {"type": "String"}}},
+  "@playerTimeRange": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
 }

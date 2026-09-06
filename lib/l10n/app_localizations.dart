@@ -637,6 +637,72 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{start} – {end}'**
   String builderTimeRange(String start, String end);
+
+  /// No description provided for @playerNeeds.
+  ///
+  /// In it, this message translates to:
+  /// **'I miei bisogni'**
+  String get playerNeeds;
+
+  /// No description provided for @playerExitHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Per uscire, tieni premuta la freccia per 3 secondi'**
+  String get playerExitHint;
+
+  /// No description provided for @playerEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Agenda vuota'**
+  String get playerEmpty;
+
+  /// No description provided for @playerAfter.
+  ///
+  /// In it, this message translates to:
+  /// **'Dopo: '**
+  String get playerAfter;
+
+  /// No description provided for @playerNow.
+  ///
+  /// In it, this message translates to:
+  /// **'Adesso'**
+  String get playerNow;
+
+  /// No description provided for @playerDone.
+  ///
+  /// In it, this message translates to:
+  /// **'Fatto'**
+  String get playerDone;
+
+  /// No description provided for @playerDoneExclamation.
+  ///
+  /// In it, this message translates to:
+  /// **'Fatto!'**
+  String get playerDoneExclamation;
+
+  /// No description provided for @playerFinished.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai finito!'**
+  String get playerFinished;
+
+  /// No description provided for @playerRestart.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricomincia'**
+  String get playerRestart;
+
+  /// No description provided for @playerEndOnly.
+  ///
+  /// In it, this message translates to:
+  /// **'– {end}'**
+  String playerEndOnly(String end);
+
+  /// No description provided for @playerTimeRange.
+  ///
+  /// In it, this message translates to:
+  /// **'{start} – {end}'**
+  String playerTimeRange(String start, String end);
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:agenda_visiva/data/db/tables.dart';
 import 'package:agenda_visiva/data/repositories/activity_repo.dart';
 import 'package:agenda_visiva/data/repositories/agenda_repo.dart';
 import 'package:agenda_visiva/features/player/player_screen.dart';
+import 'package:agenda_visiva/l10n/app_localizations.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +30,12 @@ void main() {
 
     await tester.pumpWidget(ProviderScope(
       overrides: [databaseProvider.overrideWithValue(db)],
-      child: MaterialApp(home: PlayerScreen(agendaId: agendaId)),
+      child: MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PlayerScreen(agendaId: agendaId),
+      ),
     ));
     await tester.pumpAndSettle();
 

@@ -316,4 +316,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String builderTimeRange(String start, String end) {
     return '$start – $end';
   }
+
+  @override
+  String get playerNeeds => 'My needs';
+
+  @override
+  String get playerExitHint =>
+      'To exit, press and hold the arrow for 3 seconds';
+
+  @override
+  String get playerEmpty => 'Empty schedule';
+
+  @override
+  String get playerAfter => 'Next: ';
+
+  @override
+  String get playerNow => 'Now';
+
+  @override
+  String get playerDone => 'Done';
+
+  @override
+  String get playerDoneExclamation => 'Done!';
+
+  @override
+  String get playerFinished => 'You\'re finished!';
+
+  @override
+  String get playerRestart => 'Start again';
+
+  @override
+  String playerEndOnly(String end) {
+    return '– $end';
+  }
+
+  @override
+  String playerTimeRange(String start, String end) {
+    return '$start – $end';
+  }
 }

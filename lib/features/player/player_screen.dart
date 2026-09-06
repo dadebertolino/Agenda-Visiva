@@ -13,6 +13,7 @@ import '../../data/db/database.dart';
 import '../../data/repositories/agenda_repo.dart';
 import '../../domain/item_badge.dart';
 import '../../domain/profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 import '../builder/providers.dart';
 import '../comunicazione/bisogni_screen.dart';
 
@@ -34,6 +35,7 @@ class PlayerScreen extends ConsumerWidget {
 
     final settings = ref.watch(agendaSettingsProvider(agendaId)).valueOrNull ??
       const ProfileSettings();
+    final l10n = AppLocalizations.of(context)!;
     final baseTheme = Theme.of(context);
     final playerTheme = settings.highContrast
       ? baseTheme.copyWith(
@@ -62,7 +64,7 @@ class PlayerScreen extends ConsumerWidget {
                   child: done
                       ? _EndView(agendaId: agendaId)
                       : items.isEmpty
-                          ? const Center(child: Text('Agenda vuota'))
+                          ? Center(child: Text(l10n.playerEmpty))
                           : agenda.type == AgendaType.firstThen
                               ? _FirstThenView(
                                   items: items, currentIndex: currentIndex)
@@ -88,6 +90,7 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
@@ -101,7 +104,7 @@ class _TopBar extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.record_voice_over),
-            tooltip: 'I miei bisogni',
+            tooltip: l10n.playerNeeds,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (_) => BisogniScreen(profileId: profileId)),
@@ -115,11 +118,12 @@ class _TopBar extends StatelessWidget {
 
 /// Suggerimento su come uscire: mostrato al tocco breve e al back di sistema.
 void _showExitHint(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(const SnackBar(
-      content: Text('Per uscire, tieni premuta la freccia per 3 secondi'),
-      duration: Duration(seconds: 2),
+    ..showSnackBar(SnackBar(
+      content: Text(l10n.playerExitHint),
+      duration: const Duration(seconds: 2),
     ));
 }
 
@@ -220,6 +224,7 @@ class _DailyView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final settings = ref
             .watch(agendaSettingsProvider(items.first.item.agendaId))
             .valueOrNull ??
@@ -278,7 +283,7 @@ class _DailyView extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Dopo: ',
+                  Text(l10n.playerAfter,
                       style: Theme.of(context).textTheme.titleMedium),
                   PictogramThumb(
                     type: next.activity.pictogramType,
@@ -305,6 +310,7 @@ class _FirstThenView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final current = items[currentIndex];
     final next =
         currentIndex + 1 < items.length ? items[currentIndex + 1] : null;
@@ -317,7 +323,8 @@ class _FirstThenView extends ConsumerWidget {
           children: [
             // "Adesso/Dopo" invece di "Prima/Poi": deitticamente ancorato
             // al presente del bambino, niente etichetta che "migra".
-            Text('Adesso', style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.playerNow,
+              style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             _CurrentCard(row: current, compact: true),
           ],
@@ -328,7 +335,8 @@ class _FirstThenView extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Dopo', style: Theme.of(context).textTheme.headlineSmall),
+                Text(l10n.playerAfter.trim(),
+                  style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 12),
                 PictogramThumb(
                   type: next.activity.pictogramType,
@@ -355,6 +363,7 @@ class _CurrentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final settings =
         ref.watch(agendaSettingsProvider(row.item.agendaId)).valueOrNull ??
             const ProfileSettings();
@@ -383,10 +392,7 @@ class _CurrentCard extends ConsumerWidget {
         if (settings.showTimes &&
             (row.item.startTime != null || row.item.endTime != null)) ...[
           const SizedBox(height: 4),
-          Text(
-            [row.item.startTime, row.item.endTime]
-                .whereType<String>()
-                .join(' – '),
+          Text(_formatTimes(l10n, row.item.startTime, row.item.endTime),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
@@ -415,6 +421,14 @@ class _CurrentCard extends ConsumerWidget {
     );
   }
 }
+
+String _formatTimes(AppLocalizations l10n, String? start, String? end) =>
+    switch ((start, end)) {
+      (null, null) => '',
+      (null, final endTime) => l10n.playerEndOnly(endTime!),
+      (final startTime, final endTime) =>
+        l10n.playerTimeRange(startTime!, endTime!),
+    };
 
 /// Anello analogico che si svuota: rappresentazione TEACCH-friendly,
 /// niente cifre.
@@ -562,6 +576,7 @@ class _DoneButtonState extends State<_DoneButton> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FilledButton.icon(
       style: FilledButton.styleFrom(
         minimumSize: Size(widget.width, K.childMinTouchTarget),
@@ -569,7 +584,7 @@ class _DoneButtonState extends State<_DoneButton> {
         backgroundColor: _pressed ? Colors.green.shade600 : null,
       ),
       icon: Icon(_pressed ? Icons.check_circle : Icons.check, size: 28),
-      label: Text(_pressed ? 'Fatto!' : 'Fatto'),
+      label: Text(_pressed ? l10n.playerDoneExclamation : l10n.playerDone),
       onPressed: _handleTap,
     );
   }
@@ -640,20 +655,23 @@ class _EndView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.star_rounded, size: 140, color: Colors.amber.shade400),
           const SizedBox(height: 16),
-          Text('Hai finito!', style: Theme.of(context).textTheme.headlineLarge),
+            Text(l10n.playerFinished,
+              style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 32),
           FilledButton.tonal(
             style: FilledButton.styleFrom(
                 minimumSize: const Size(200, K.childMinTouchTarget)),
             onPressed: () =>
                 ref.read(agendaRepoProvider).resetCompletions(agendaId),
-            child: const Text('Ricomincia', style: TextStyle(fontSize: 18)),
+            child: Text(l10n.playerRestart,
+              style: const TextStyle(fontSize: 18)),
           ),
         ],
       ),

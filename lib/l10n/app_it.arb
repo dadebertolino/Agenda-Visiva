@@ -100,4 +100,17 @@
   "@builderTimerSummary": {"placeholders": {"minutes": {"type": "num"}}},
   "@builderEndOnly": {"placeholders": {"end": {"type": "String"}}},
   "@builderTimeRange": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
+  ,"playerNeeds": "I miei bisogni",
+  "playerExitHint": "Per uscire, tieni premuta la freccia per 3 secondi",
+  "playerEmpty": "Agenda vuota",
+  "playerAfter": "Dopo: ",
+  "playerNow": "Adesso",
+  "playerDone": "Fatto",
+  "playerDoneExclamation": "Fatto!",
+  "playerFinished": "Hai finito!",
+  "playerRestart": "Ricomincia",
+  "playerEndOnly": "– {end}",
+  "playerTimeRange": "{start} – {end}",
+  "@playerEndOnly": {"placeholders": {"end": {"type": "String"}}},
+  "@playerTimeRange": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
 }
