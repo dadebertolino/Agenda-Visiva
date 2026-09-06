@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -19,6 +18,18 @@ class PdfExportService {
   final ArasaacApi _arasaac;
   final MediaStore _media;
 
+  Future<pw.ThemeData> _pdfTheme() async {
+    final font = pw.Font.ttf(
+      (await rootBundle.load('assets/fonts/NotoSans.ttf')),
+    );
+    return pw.ThemeData.withFont(
+      base: font,
+      bold: font,
+      italic: font,
+      boldItalic: font,
+    );
+  }
+
   /// [perPage]: 1, 2 o 4 pittogrammi per pagina A4.
   Future<Uint8List> buildAgendaPdf({
     required Agenda agenda,
@@ -35,7 +46,10 @@ class PdfExportService {
       images[row.item.id] = await _loadImage(row);
     }
 
-    final doc = pw.Document(title: agenda.title);
+    final doc = pw.Document(
+      title: agenda.title,
+      theme: await _pdfTheme(),
+    );
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -144,7 +158,10 @@ class PdfExportService {
       hasArasaac |= row.activity.pictogramType == PictogramType.arasaac;
     }
 
-    final doc = pw.Document(title: agenda.title);
+    final doc = pw.Document(
+      title: agenda.title,
+      theme: await _pdfTheme(),
+    );
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
