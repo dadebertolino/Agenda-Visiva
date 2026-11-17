@@ -78,8 +78,7 @@ class AgendaEditorScreen extends ConsumerWidget {
                 : ReorderableListView.builder(
                     buildDefaultDragHandles: false,
                     itemCount: items.length,
-                    onReorder: (oldIndex, newIndex) {
-                      if (newIndex > oldIndex) newIndex--;
+                    onReorderItem: (oldIndex, newIndex) {
                       final ids = items.map((r) => r.item.id).toList();
                       final moved = ids.removeAt(oldIndex);
                       ids.insert(newIndex, moved);
