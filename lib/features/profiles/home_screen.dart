@@ -3,11 +3,14 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
+import '../../core/weekdays.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
+import '../../domain/schedule_hint.dart';
 import '../../l10n/app_localizations.dart';
 import '../builder/agenda_editor_screen.dart';
 import '../comunicazione/bisogni_screen.dart';
@@ -26,6 +29,13 @@ String _typeLabel(AppLocalizations l10n, AgendaType type) => switch (type) {
       AgendaType.firstThen => l10n.agendaTypeFirstThen,
       AgendaType.sequence => l10n.agendaTypeSequence,
     };
+
+/// Tipo di agenda + giorni della settimana, se impostati.
+String _agendaSubtitle(AppLocalizations l10n, String lang, Agenda a) {
+  final days = ScheduleHint.fromJsonString(a.scheduleHint).weekdays;
+  final type = _typeLabel(l10n, a.type);
+  return days.isEmpty ? type : '$type · ${weekdaysSummary(lang, days)}';
+}
 
 /// Home adulto: lista profili bambino.
 class HomeScreen extends ConsumerWidget {
@@ -208,6 +218,11 @@ class ProfileAgendasScreen extends ConsumerWidget {
     final agendas =
         ref.watch(profileAgendasProvider(profile.id)).valueOrNull ?? [];
     final l10n = AppLocalizations.of(context)!;
+    final lang = Localizations.localeOf(context).languageCode;
+    final now = DateTime.now();
+    final todays = agendas
+        .where((a) => ScheduleHint.fromJsonString(a.scheduleHint).appliesTo(now))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -253,6 +268,31 @@ class ProfileAgendasScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
+          if (todays.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
+              child: Text(
+                l10n.homeToday(DateFormat.EEEE(lang).format(now)),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            for (final a in todays)
+              Card(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: ListTile(
+                  leading: const Icon(Icons.today),
+                  title: Text(a.title),
+                  trailing: IconButton.filled(
+                    iconSize: 32,
+                    icon: const Icon(Icons.play_arrow),
+                    tooltip: l10n.homeStartChild,
+                    onPressed: () => openPlayer(context, ref, a.id),
+                  ),
+                  onTap: () => openPlayer(context, ref, a.id),
+                ),
+              ),
+            const Divider(height: 24),
+          ],
           if (agendas.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
@@ -266,14 +306,11 @@ class ProfileAgendasScreen extends ConsumerWidget {
               Card(
                 child: ListTile(
                   title: Text(a.title),
-                  subtitle: Text(_typeLabel(l10n, a.type)),
+                  subtitle: Text(_agendaSubtitle(l10n, lang, a)),
                   trailing: IconButton(
                     icon: const Icon(Icons.play_circle_fill, size: 32),
                     tooltip: l10n.homeStartChild,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => PlayerScreen(agendaId: a.id)),
-                    ),
+                    onPressed: () => openPlayer(context, ref, a.id),
                   ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(

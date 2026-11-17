@@ -47,6 +47,10 @@ dependencies:
   flutter_tts: ^4.0.2
   url_launcher: ^6.3.2
 
+  # Voce registrata dall'adulto (file locale, nessun servizio remoto)
+  record: ^7.2.0
+  audioplayers: ^6.8.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

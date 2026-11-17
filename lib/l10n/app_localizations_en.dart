@@ -158,7 +158,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeSharePhotosWarning =>
-      'If it contains photos, share only with trusted people';
+      'If it contains photos or recorded voices, share only with trusted people';
 
   @override
   String get homeDeleteAgenda => 'Delete';
@@ -492,7 +492,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPrivacyBody =>
-      'Visual Schedule works completely offline.\n\nChildren\'s names, photos and schedules never leave this device: no account, no server, no tracking, no advertising.\n\nImported photos are resized and stripped of metadata (including GPS location).\n\nSharing a schedule (.agviz or PDF) happens only when you start it using your device\'s tools. .agviz files never contain the child\'s name.';
+      'Visual Schedule works completely offline.\n\nChildren\'s names, photos and schedules never leave this device: no account, no server, no tracking, no advertising.\n\nImported photos are resized and stripped of metadata (including GPS location). Recorded voices stay here too.\n\nSharing a schedule (.agviz or PDF) happens only when you start it using your device\'s tools. .agviz files never contain the child\'s name.';
 
   @override
   String get settingsCredits => 'Pictogram credits';
@@ -534,4 +534,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsVersion => 'Version';
+
+  @override
+  String get builderVoice => 'Recorded voice';
+
+  @override
+  String get builderVoiceSubtitle =>
+      'Applies to this activity in every schedule';
+
+  @override
+  String get builderHasVoice => 'recorded voice';
+
+  @override
+  String get builderDays => 'Days';
+
+  @override
+  String get builderDaysHelp =>
+      'No day = always available. With days set, the schedule shows up under \"Today\".';
+
+  @override
+  String get builderReward => 'Final reward';
+
+  @override
+  String get builderRewardNone => 'None: tap to choose one';
+
+  @override
+  String get builderRewardHelp =>
+      'One token for each completed activity, then the reward';
+
+  @override
+  String get builderRewardName => 'Reward name';
+
+  @override
+  String get builderRewardChange => 'Change reward';
+
+  @override
+  String get builderRewardRemove => 'Remove reward';
+
+  @override
+  String get voiceTitle => 'Record your voice';
+
+  @override
+  String voiceHint(int seconds) {
+    return 'Tap the microphone and say the word or phrase. Up to $seconds seconds.';
+  }
+
+  @override
+  String voiceRecording(int seconds) {
+    return 'Recording… $seconds s';
+  }
+
+  @override
+  String get voiceRecord => 'Record';
+
+  @override
+  String get voiceStop => 'Stop';
+
+  @override
+  String get voiceListen => 'Listen';
+
+  @override
+  String get voiceRedo => 'Record again';
+
+  @override
+  String get voiceSave => 'Save';
+
+  @override
+  String get voiceCancel => 'Cancel';
+
+  @override
+  String get voiceDelete => 'Delete recording';
+
+  @override
+  String get voicePermissionDenied =>
+      'Microphone access is needed: you can allow it in the device settings.';
+
+  @override
+  String get voiceUnavailable => 'Microphone unavailable on this device';
+
+  @override
+  String get voicePrivacy =>
+      'The recording stays on this device. It only travels if you share the schedule as an .agviz file.';
+
+  @override
+  String get needsBoardVoice => 'Record voice';
+
+  @override
+  String homeToday(String day) {
+    return 'Today, $day';
+  }
+
+  @override
+  String playerTokens(int done, int total) {
+    return 'Tokens: $done of $total';
+  }
+
+  @override
+  String get playerRewardEarned => 'You earned:';
 }

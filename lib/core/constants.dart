@@ -14,6 +14,9 @@ abstract final class K {
   /// Durata pressione lunga per il gate adulto.
   static const Duration adultGateLongPress = Duration(seconds: 3);
 
+  /// Durata massima di una voce registrata: una parola o una frase breve.
+  static const int voiceMaxSeconds = 15;
+
   static const String schemaVersionExport = '2';
 
   static const String appVersion = '1.2.1';

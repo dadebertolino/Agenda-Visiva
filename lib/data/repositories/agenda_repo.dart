@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../db/database.dart';
 import '../db/tables.dart';
+import '../../domain/schedule_hint.dart';
 
 const _uuid = Uuid();
 
@@ -58,6 +59,31 @@ class AgendaRepo {
         ));
     return id;
   }
+
+  /// Giorni della settimana (DateTime.weekday). Insieme vuoto = sempre.
+  Future<void> setWeekdays(String agendaId, Set<int> weekdays) async {
+    final agenda = await (_db.select(_db.agendas)
+          ..where((t) => t.id.equals(agendaId)))
+        .getSingle();
+    final hint = ScheduleHint.fromJsonString(agenda.scheduleHint)
+        .withWeekdays(weekdays);
+    await (_db.update(_db.agendas)..where((t) => t.id.equals(agendaId)))
+        .write(AgendasCompanion(
+      scheduleHint: Value(hint.toJsonString()),
+      updatedAt: Value(DateTime.now().toUtc()),
+      dirty: const Value(true),
+    ));
+  }
+
+  /// Premio finale della tabella gettoni (null = nessun premio).
+  Future<void> setReward(String agendaId, String? activityId) =>
+      (_db.update(_db.agendas)..where((t) => t.id.equals(agendaId))).write(
+        AgendasCompanion(
+          rewardActivityId: Value(activityId),
+          updatedAt: Value(DateTime.now().toUtc()),
+          dirty: const Value(true),
+        ),
+      ).then((_) {});
 
   Future<void> updateType(String agendaId, AgendaType type) =>
       (_db.update(_db.agendas)..where((t) => t.id.equals(agendaId))).write(
@@ -168,6 +194,26 @@ class AgendaRepo {
         updatedAt: Value(DateTime.now().toUtc()),
         dirty: const Value(true),
       )).then((_) {});
+
+  /// Spunte rimaste da un giorno precedente: l'agenda riparte pulita.
+  /// Chiamato all'apertura della modalità bambino, così la routine del
+  /// lunedì non si presenta il lunedì dopo già "finita".
+  Future<bool> resetIfStale(String agendaId, {DateTime? now}) async {
+    final today = now ?? DateTime.now();
+    final startOfToday =
+        DateTime(today.year, today.month, today.day).toUtc();
+    final stale = await (_db.select(_db.agendaItems)
+          ..where((t) =>
+              t.agendaId.equals(agendaId) &
+              t.deletedAt.isNull() &
+              t.isCompleted.equals(true) &
+              t.completedAt.isSmallerThanValue(startOfToday))
+          ..limit(1))
+        .get();
+    if (stale.isEmpty) return false;
+    await resetCompletions(agendaId);
+    return true;
+  }
 
   Future<void> softDelete(String agendaId) => _db.softDeleteAgenda(agendaId);
 }

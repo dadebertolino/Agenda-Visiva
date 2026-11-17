@@ -68,6 +68,8 @@
 		</array>
 		<key>NSCameraUsageDescription</key>
 		<string>Per scattare foto da usare come pittogrammi nelle agende. Le foto restano solo su questo dispositivo.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Per registrare la tua voce e farla ascoltare al posto della voce sintetica. Le registrazioni restano solo su questo dispositivo.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Per scegliere foto da usare come pittogrammi nelle agende. Le foto restano solo su questo dispositivo.</string>
 		<key>UIStatusBarHidden</key>

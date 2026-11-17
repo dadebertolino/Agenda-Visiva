@@ -9,6 +9,7 @@ import '../../data/repositories/board_repo.dart';
 import '../../domain/profile_settings.dart';
 import '../../l10n/app_localizations.dart';
 import '../pictogram_picker/pictogram_picker.dart';
+import '../voice/voice_recorder.dart';
 
 final boardProvider = StreamProvider.family<List<BoardRow>, String>(
     (ref, profileId) => ref.watch(boardRepoProvider).watch(profileId));
@@ -100,14 +101,13 @@ class _NeedCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         onTap: () {
           HapticFeedback.mediumImpact();
-          // La voce è lo scopo della tavola: parla sempre.
-          ref
-              .read(ttsProvider)
-              .speak(
-              row.activity.ttsText ?? row.activity.label,
-              locale: Localizations.localeOf(context).languageCode == 'en'
-                ? 'en-US'
-                : 'it-IT',
+          // La voce è lo scopo della tavola: parla sempre. Voce registrata
+          // dall'adulto se c'è, altrimenti sintesi vocale.
+          ref.read(activitySpeakerProvider).speak(
+                text: row.activity.ttsText ?? row.activity.label,
+                audioAssetId: row.activity.audioAssetId,
+                locale: ttsLocaleFor(
+                    Localizations.localeOf(context).languageCode),
               );
         },
         child: Padding(
@@ -183,10 +183,26 @@ class BisogniEditScreen extends ConsumerWidget {
                       pictogramRef: r.activity.pictogramRef,
                     ),
                     title: Text(r.activity.label),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: () =>
-                          ref.read(boardRepoProvider).remove(r.item.id),
+                    subtitle: r.activity.audioAssetId != null
+                        ? Text(l10n.builderHasVoice)
+                        : null,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(r.activity.audioAssetId != null
+                              ? Icons.mic
+                              : Icons.mic_none),
+                          tooltip: l10n.needsBoardVoice,
+                          onPressed: () =>
+                              editActivityVoice(context, ref, r.activity),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () =>
+                              ref.read(boardRepoProvider).remove(r.item.id),
+                        ),
+                      ],
                     ),
                   ),
                 Padding(

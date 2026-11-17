@@ -23,7 +23,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -35,6 +35,10 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(agendaItems, agendaItems.endTime);
             await m.addColumn(agendaItems, agendaItems.placeJson);
             await m.addColumn(agendaItems, agendaItems.companionJson);
+          }
+          if (from < 4) {
+            await m.addColumn(activities, activities.audioAssetId);
+            await m.addColumn(agendas, agendas.rewardActivityId);
           }
         },
         beforeOpen: (details) async {

@@ -83,6 +83,57 @@ class MediaStore {
         .getSingle();
   }
 
+  /// Registrazione vocale già codificata (AAC/m4a) dal registratore:
+  /// spostata in media/, il file temporaneo viene eliminato.
+  /// L'audio non ha metadati di posizione da ripulire.
+  Future<MediaAsset> importAudio(File recorded) async {
+    final bytes = await recorded.readAsBytes();
+    final digest = sha256.convert(bytes).toString();
+    final id = const Uuid().v4();
+    final relativePath = 'media/$id.m4a';
+    final file = File('${_docsDir.path}/$relativePath');
+    await file.create(recursive: true);
+    await file.writeAsBytes(bytes);
+    try {
+      await recorded.delete();
+    } catch (_) {
+      // Il temporaneo lo ripulirà il sistema.
+    }
+
+    await _db.into(_db.mediaAssets).insert(MediaAssetsCompanion.insert(
+          id: id,
+          filePath: relativePath,
+          mimeType: 'audio/mp4',
+          width: 0,
+          height: 0,
+          sha256: digest,
+        ));
+    return (_db.select(_db.mediaAssets)..where((t) => t.id.equals(id)))
+        .getSingle();
+  }
+
+  /// Minimizzazione: una registrazione sostituita o rimossa non resta sul
+  /// disco se nessuna attività la usa più. Il record diventa tombstone.
+  Future<void> deleteAudioIfUnused(String assetId) async {
+    final users = await (_db.select(_db.activities)
+          ..where((t) =>
+              t.audioAssetId.equals(assetId) & t.deletedAt.isNull()))
+        .get();
+    if (users.isNotEmpty) return;
+    final asset = await (_db.select(_db.mediaAssets)
+          ..where((t) => t.id.equals(assetId)))
+        .getSingleOrNull();
+    if (asset == null) return;
+    final file = File('${_docsDir.path}/${asset.filePath}');
+    if (await file.exists()) await file.delete();
+    await (_db.update(_db.mediaAssets)..where((t) => t.id.equals(assetId)))
+        .write(MediaAssetsCompanion(
+      deletedAt: Value(DateTime.now().toUtc()),
+      updatedAt: Value(DateTime.now().toUtc()),
+      dirty: const Value(true),
+    ));
+  }
+
   /// Path assoluto di un asset (il DB conserva solo il path relativo).
   Future<File?> fileFor(String assetId) async {
     final asset = await (_db.select(_db.mediaAssets)
