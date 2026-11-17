@@ -77,6 +77,7 @@ Stack: Riverpod 2, drift, pdf/printing, flutter_tts. Dettagli e razionali in `do
 - [x] v1.2.1: onboarding, gate adulto, accessibilità, export `.agviz` completo, font Unicode PDF e interfaccia IT/EN
 - [x] v1.3.0: voce registrata, agenda per giorno della settimana, tabella gettoni; supporto macOS e Windows
 - [x] v1.3.1: correzioni di interfaccia su schermi larghi, screenshot Mac App Store
+- [x] v1.3.2: build iOS con Swift Package Manager (iOS minimo 15.0)
 - [ ] Guida all'uso per insegnanti e famiglie
 - [ ] Ulteriori rifiniture di accessibilità e feedback dal pilota
 - [ ] Fase 2: sync casa-scuola con crittografia end-to-end (il server vedrà solo blob cifrati) — DPIA pubblica in questo repo
