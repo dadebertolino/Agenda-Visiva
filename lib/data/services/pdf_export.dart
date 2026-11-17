@@ -67,7 +67,7 @@ class PdfExportService {
         build: (context) => [
           pw.Text(agenda.title,
               style:
-                  pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
+                  const pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 4),
           pw.Text(labels.cutAndLaminate,
               style:
@@ -141,7 +141,7 @@ class PdfExportService {
             shape: pw.BoxShape.circle, color: PdfColors.grey200),
         child: pw.Text(initial,
             style:
-                pw.TextStyle(fontSize: 48, fontWeight: pw.FontWeight.bold)),
+                const pw.TextStyle(fontSize: 48, fontWeight: pw.FontWeight.bold)),
       ),
     );
   }
@@ -184,7 +184,7 @@ class PdfExportService {
         build: (context) => [
           pw.Text(agenda.title,
               style:
-                  pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
+                  const pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 16),
           for (var i = 0; i < rows.length; i++) ...[
             _listRow(i, rows[i], images[rows[i].item.id], labels),
@@ -230,14 +230,14 @@ class PdfExportService {
                         row.activity.label.isEmpty
                             ? '?'
                             : row.activity.label[0].toUpperCase(),
-                        style: pw.TextStyle(
+                        style: const pw.TextStyle(
                             fontSize: 20, fontWeight: pw.FontWeight.bold)),
                   ),
           ),
           pw.SizedBox(width: 12),
           pw.Expanded(
             child: pw.Text(row.activity.label,
-                style: pw.TextStyle(
+                style: const pw.TextStyle(
                     fontSize: 16, fontWeight: pw.FontWeight.bold)),
           ),
           if (times.isNotEmpty)

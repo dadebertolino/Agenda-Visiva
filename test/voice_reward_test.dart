@@ -161,7 +161,7 @@ void main() {
     });
     archive.addFile(ArchiveFile('media/../../evil.m4a', 1, [0]));
     final zip = File('${a.dir.path}/evil.agviz')
-      ..writeAsBytesSync(ZipEncoder().encode(archive)!);
+      ..writeAsBytesSync(ZipEncoder().encode(archive));
 
     await b.agviz.importAgenda(zip, profileId: 'kid');
     expect(await b.db.select(b.db.mediaAssets).get(), isEmpty);

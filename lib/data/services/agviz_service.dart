@@ -122,7 +122,7 @@ class AgvizService {
       }
     }
 
-    final zipBytes = ZipEncoder().encode(archive)!;
+    final zipBytes = ZipEncoder().encode(archive);
     var safe = agenda.title
         .replaceAll(RegExp(r'[^\w\s-]'), '')
         .trim()
