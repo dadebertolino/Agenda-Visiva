@@ -69,13 +69,22 @@ class BisogniScreen extends ConsumerWidget {
                     )
                   : GridView.builder(
                       padding: const EdgeInsets.all(16),
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.9 / settings.cardScale,
-                      ),
+                      // Telefono: 2 colonne come sempre. Tablet larghi e
+                      // desktop: colonne in base allo spazio, così le carte
+                      // non diventano enormi e la tavola resta tutta a vista.
+                      gridDelegate: MediaQuery.sizeOf(context).width < 700
+                          ? SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 0.9 / settings.cardScale,
+                            )
+                          : SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 300 * settings.cardScale,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 0.9,
+                            ),
                       itemCount: rows.length,
                       itemBuilder: (context, i) =>
                           _NeedCard(row: rows[i]),

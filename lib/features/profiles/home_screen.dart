@@ -282,9 +282,12 @@ class ProfileAgendasScreen extends ConsumerWidget {
                 child: ListTile(
                   leading: const Icon(Icons.today),
                   title: Text(a.title),
+                  // Colore esplicito: il ListTile imporrebbe il suo iconColor
+                  // anche al pulsante pieno (icona scura su fondo scuro).
                   trailing: IconButton.filled(
                     iconSize: 32,
-                    icon: const Icon(Icons.play_arrow),
+                    icon: Icon(Icons.play_arrow,
+                        color: Theme.of(context).colorScheme.onPrimary),
                     tooltip: l10n.homeStartChild,
                     onPressed: () => openPlayer(context, ref, a.id),
                   ),
