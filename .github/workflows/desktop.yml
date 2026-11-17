@@ -1,0 +1,53 @@
+name: Desktop
+
+# Verifica che le build macOS e Windows compilino e produce il pacchetto
+# MSIX per il Microsoft Store (artifact scaricabile dalla run).
+# La firma e l'upload sugli store restano manuali.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.x"
+          cache: true
+
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter build windows --release
+
+      # Pacchetto per lo Store (non firmato: lo firma Microsoft all'invio).
+      # Con i segnaposto in msix_config il pacchetto serve solo da verifica.
+      - run: dart run msix:create --build-windows false
+      - uses: actions/upload-artifact@v6
+        with:
+          name: agenda-visiva-msix
+          path: build/windows/x64/runner/Release/*.msix
+          if-no-files-found: error
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.x"
+          cache: true
+
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      # Solo verifica di compilazione: la build per il Mac App Store si
+      # archivia e firma da Xcode (Product → Archive).
+      - run: flutter build macos --debug

@@ -17,6 +17,18 @@ import '../../l10n/app_localizations.dart';
 import '../builder/providers.dart';
 import '../comunicazione/bisogni_screen.dart';
 
+/// Apre la modalità bambino. Se l'agenda ha spunte di un giorno
+/// precedente riparte pulita: la routine del lunedì non si presenta il
+/// lunedì dopo già "finita".
+Future<void> openPlayer(
+    BuildContext context, WidgetRef ref, String agendaId) async {
+  final navigator = Navigator.of(context);
+  await ref.read(agendaRepoProvider).resetIfStale(agendaId);
+  await navigator.push(
+    MaterialPageRoute<void>(builder: (_) => PlayerScreen(agendaId: agendaId)),
+  );
+}
+
 /// Modalità bambino: full-screen, un solo elemento dominante,
 /// back bloccato, uscita solo via gate adulto.
 class PlayerScreen extends ConsumerWidget {
@@ -46,6 +58,10 @@ class PlayerScreen extends ConsumerWidget {
       : baseTheme;
     final currentIndex = items.indexWhere((r) => !r.item.isCompleted);
     final done = currentIndex == -1 && items.isNotEmpty;
+    final rewardId = agenda.rewardActivityId;
+    final reward = rewardId == null
+        ? null
+        : ref.watch(activityProvider(rewardId)).valueOrNull;
 
     return PopScope(
       canPop: false,
@@ -60,9 +76,15 @@ class PlayerScreen extends ConsumerWidget {
             child: Column(
               children: [
                 _TopBar(title: agenda.title, profileId: agenda.profileId),
+                if (reward != null && items.isNotEmpty && !done)
+                  _TokenBoard(
+                    total: items.length,
+                    earned: items.where((r) => r.item.isCompleted).length,
+                    reward: reward,
+                  ),
                 Expanded(
                   child: done
-                      ? _EndView(agendaId: agendaId)
+                      ? _EndView(agendaId: agendaId, reward: reward)
                       : items.isEmpty
                           ? Center(child: Text(l10n.playerEmpty))
                           : agenda.type == AgendaType.firstThen
@@ -376,12 +398,7 @@ class _CurrentCard extends ConsumerWidget {
         GestureDetector(
           onTap: () {
             if (!settings.tts) return;
-            ref
-                .read(ttsProvider)
-                .speak(
-                  row.activity.ttsText ?? row.activity.label,
-                  locale: _ttsLocale(context),
-                );
+            _speak(context, ref, row.activity);
           },
           child: PictogramThumb(
             type: row.activity.pictogramType,
@@ -433,8 +450,70 @@ String _formatTimes(AppLocalizations l10n, String? start, String? end) =>
         l10n.playerTimeRange(startTime!, endTime!),
     };
 
-  String _ttsLocale(BuildContext context) =>
-    Localizations.localeOf(context).languageCode == 'en' ? 'en-US' : 'it-IT';
+/// Voce registrata dall'adulto se c'è, altrimenti sintesi vocale.
+void _speak(BuildContext context, WidgetRef ref, Activity activity) {
+  ref.read(activitySpeakerProvider).speak(
+        text: activity.ttsText ?? activity.label,
+        audioAssetId: activity.audioAssetId,
+        locale: ttsLocaleFor(Localizations.localeOf(context).languageCode),
+      );
+}
+
+/// Tabella gettoni: un gettone per attività, si riempie a ogni "Fatto";
+/// in fondo il premio, sempre visibile come motivazione.
+class _TokenBoard extends ConsumerWidget {
+  const _TokenBoard(
+      {required this.total, required this.earned, required this.reward});
+  final int total;
+  final int earned;
+  final Activity reward;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    // Oltre 10 gettoni si stringono, per restare su una riga anche su phone.
+    final size = total > 10 ? 22.0 : 30.0;
+    return Semantics(
+      label: l10n.playerTokens(earned, total),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: [
+                  for (var i = 0; i < total; i++)
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: Icon(
+                        i < earned ? Icons.star_rounded : Icons.star_outline_rounded,
+                        key: ValueKey(i < earned),
+                        size: size,
+                        color: i < earned
+                            ? Colors.amber.shade600
+                            : scheme.outlineVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.arrow_forward, color: scheme.outline),
+            const SizedBox(width: 8),
+            PictogramThumb(
+              type: reward.pictogramType,
+              pictogramRef: reward.pictogramRef,
+              size: 44,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 /// Anello analogico che si svuota: rappresentazione TEACCH-friendly,
 /// niente cifre.
@@ -655,18 +734,40 @@ class _BadgeRow extends StatelessWidget {
 }
 
 /// Fine agenda: rinforzo visivo semplice, non sovrastimolante.
+/// Con un premio impostato mostra il premio (tocca per sentirlo).
 class _EndView extends ConsumerWidget {
-  const _EndView({required this.agendaId});
+  const _EndView({required this.agendaId, this.reward});
   final String agendaId;
+  final Activity? reward;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final reward = this.reward;
+    final settings = ref.watch(agendaSettingsProvider(agendaId)).valueOrNull ??
+        const ProfileSettings();
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.star_rounded, size: 140, color: Colors.amber.shade400),
+          if (reward == null)
+            Icon(Icons.star_rounded, size: 140, color: Colors.amber.shade400)
+          else ...[
+            Text(l10n.playerRewardEarned,
+                style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: settings.tts ? () => _speak(context, ref, reward) : null,
+              child: PictogramThumb(
+                type: reward.pictogramType,
+                pictogramRef: reward.pictogramRef,
+                size: 180 * settings.cardScale,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(reward.label,
+                style: Theme.of(context).textTheme.headlineMedium),
+          ],
           const SizedBox(height: 16),
             Text(l10n.playerFinished,
               style: Theme.of(context).textTheme.headlineLarge),

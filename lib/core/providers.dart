@@ -13,6 +13,7 @@ import '../data/services/arasaac_api.dart';
 import '../data/services/media_store.dart';
 import '../data/services/pdf_export.dart';
 import '../data/services/tts_service.dart';
+import '../data/services/voice_player.dart';
 import '../domain/profile_settings.dart';
 
 /// Il DB vive come provider root: i repository lo ricevono da qui.
@@ -39,6 +40,26 @@ final arasaacApiProvider =
 
 final ttsProvider = Provider<TtsService>((ref) => TtsService());
 
+final voicePlayerProvider = Provider<VoicePlayer>((ref) {
+  final player = VoicePlayer();
+  ref.onDispose(player.dispose);
+  return player;
+});
+
+/// Voce registrata se presente, altrimenti TTS. Usare questo, non ttsProvider,
+/// ovunque si faccia "parlare" un'attività.
+final activitySpeakerProvider = Provider<ActivitySpeaker>((ref) =>
+    ActivitySpeaker(
+      ref.watch(ttsProvider),
+      ref.watch(voicePlayerProvider),
+      (assetId) async =>
+          (await ref.read(mediaStoreProvider.future)).fileFor(assetId),
+    ));
+
+/// Locale della sintesi vocale coerente con la lingua dell'interfaccia.
+String ttsLocaleFor(String languageCode) =>
+    languageCode == 'en' ? 'en-US' : 'it-IT';
+
 final documentsDirProvider = FutureProvider<Directory>(
     (ref) => getApplicationDocumentsDirectory());
 
@@ -63,6 +84,10 @@ final agvizProvider = FutureProvider<AgvizService>((ref) async {
   final dir = await ref.watch(documentsDirProvider.future);
   return AgvizService(ref.watch(databaseProvider), dir);
 });
+
+/// Singola attività (premio finale della tabella gettoni).
+final activityProvider = StreamProvider.family<Activity?, String>(
+    (ref, id) => ref.watch(activityRepoProvider).watchById(id));
 
 /// Impostazioni del profilo a cui appartiene un'agenda (usato dal player).
 final agendaSettingsProvider =

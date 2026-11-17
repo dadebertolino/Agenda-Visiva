@@ -38,8 +38,15 @@ class Agendas extends Table with SyncableTable {
   TextColumn get type => textEnum<AgendaType>()();
 
   /// JSON opzionale: {weekdays: [1,2,3], time: "08:00"}
+  /// weekdays = DateTime.weekday (1 lunedì … 7 domenica). Vedi ScheduleHint.
   TextColumn get scheduleHint => text().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  // ---- v4 ----
+
+  /// Premio finale della tabella gettoni (FK ad Activities, nullable).
+  /// Un gettone per attività completata; a tavola piena, il premio.
+  TextColumn get rewardActivityId => text().nullable()();
 }
 
 enum PictogramType { arasaac, photo, builtin }
@@ -53,6 +60,13 @@ class Activities extends Table with SyncableTable {
   TextColumn get pictogramRef => text()();
   TextColumn get ttsText => text().nullable()();
   TextColumn get color => text().nullable()();
+
+  // ---- v4 ----
+
+  /// personal — voce registrata dall'adulto (FK a MediaAssets, audio/mp4).
+  /// Se presente sostituisce la sintesi vocale. Sull'Activity e non
+  /// sull'item: "Bagno" registrato una volta vale in tutte le agende.
+  TextColumn get audioAssetId => text().nullable()();
 }
 
 /// Istanza di una Activity dentro un'Agenda, con posizione e timer.
@@ -88,9 +102,11 @@ class BoardItems extends Table with SyncableTable {
   IntColumn get position => integer()();
 }
 
-/// Foto caricate dall'utente. File su disco, EXIF/GPS rimossi all'import.
+/// Foto e registrazioni vocali dell'utente. File su disco, mai trasmessi.
+/// Foto: EXIF/GPS rimossi all'import. Audio (v4): mimeType audio/mp4,
+/// width/height = 0, durata massima limitata in registrazione.
 class MediaAssets extends Table with SyncableTable {
-  /// personal — path relativo a documents dir: media/<uuid>.jpg
+  /// personal — path relativo a documents dir: media/<uuid>.jpg|.m4a
   TextColumn get filePath => text()();
   TextColumn get mimeType => text()();
   IntColumn get width => integer()();

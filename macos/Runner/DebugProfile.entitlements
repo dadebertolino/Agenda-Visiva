@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<!-- Solo pittogrammi ARASAAC (contenuto pubblico verso l'utente). -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<!-- Voce registrata dall'adulto: file locale, mai trasmesso. -->
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
+	<!-- Foto scelte dall'utente, import/export .agviz e PDF. -->
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<key>com.apple.security.print</key>
+	<true/>
+	<!-- Solo debug/profile: hot reload e DevTools. -->
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+</dict>
+</plist>

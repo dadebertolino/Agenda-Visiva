@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:printing/printing.dart';
 
 import '../../core/providers.dart';
+import '../../core/weekdays.dart';
 import '../../core/widgets/pictogram_thumb.dart';
 import '../../data/db/database.dart';
 import '../../data/db/tables.dart';
 import '../../data/repositories/agenda_repo.dart';
 import '../../domain/item_badge.dart';
+import '../../domain/schedule_hint.dart';
 import '../../l10n/app_localizations.dart';
 import '../pictogram_picker/pictogram_picker.dart';
 import '../player/player_screen.dart';
+import '../voice/voice_recorder.dart';
 import 'providers.dart';
 
 /// Editor agenda (modalità adulto). Criterio: routine completa in <2 minuti.
@@ -43,10 +46,7 @@ class AgendaEditorScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.play_arrow),
             tooltip: l10n.builderPreview,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (_) => PlayerScreen(agendaId: agendaId)),
-            ),
+            onPressed: () => openPlayer(context, ref, agendaId),
           ),
         ],
       ),
@@ -70,6 +70,7 @@ class AgendaEditorScreen extends ConsumerWidget {
               onSelectionChanged: (s) => repo.updateType(agendaId, s.first),
             ),
           ),
+          _DaysAndRewardPanel(agenda: agenda),
           Expanded(
             child: items.isEmpty
                 ? Center(
@@ -78,8 +79,7 @@ class AgendaEditorScreen extends ConsumerWidget {
                 : ReorderableListView.builder(
                     buildDefaultDragHandles: false,
                     itemCount: items.length,
-                    onReorder: (oldIndex, newIndex) {
-                      if (newIndex > oldIndex) newIndex--;
+                    onReorderItem: (oldIndex, newIndex) {
                       final ids = items.map((r) => r.item.id).toList();
                       final moved = ids.removeAt(oldIndex);
                       ids.insert(newIndex, moved);
@@ -279,13 +279,14 @@ class _ItemRow extends ConsumerWidget {
     final subtitle = [
       if (times != null) times,
       if (timer != null) l10n.builderTimerSummary(timer ~/ 60),
+      if (row.activity.audioAssetId != null) '🎤 ${l10n.builderHasVoice}',
     ].join('   ');
 
     return ListTile(
       key: key,
       // Il menu è raggiungibile sia col tap sull'icona ⋮ (scopribile)
       // sia col long-press (scorciatoia per chi la conosce).
-      onLongPress: () => _showItemOptions(context, repo),
+      onLongPress: () => _showItemOptions(context, ref, repo),
       leading: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -305,14 +306,15 @@ class _ItemRow extends ConsumerWidget {
       trailing: IconButton(
         icon: const Icon(Icons.more_vert),
         tooltip: l10n.builderItemOptions,
-        onPressed: () => _showItemOptions(context, repo),
+        onPressed: () => _showItemOptions(context, ref, repo),
       ),
     );
   }
 
   /// Menu opzioni item: sostituisce il long-press diretto sul timer
   /// ora che le opzioni per-item sono più di una.
-  Future<void> _showItemOptions(BuildContext context, AgendaRepo repo) async {
+  Future<void> _showItemOptions(
+      BuildContext context, WidgetRef ref, AgendaRepo repo) async {
     final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet<void>(
       context: context,
@@ -342,6 +344,17 @@ class _ItemRow extends ConsumerWidget {
               onTap: () {
                 Navigator.pop(sheetContext);
                 _pickBadges(context, repo);
+              },
+            ),
+            ListTile(
+              leading: Icon(row.activity.audioAssetId != null
+                  ? Icons.mic
+                  : Icons.mic_none),
+              title: Text(l10n.builderVoice),
+              subtitle: Text(l10n.builderVoiceSubtitle),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                editActivityVoice(context, ref, row.activity);
               },
             ),
             const Divider(height: 1),
@@ -555,6 +568,161 @@ class _RecentStrip extends ConsumerWidget {
                 .addItem(agendaId: agendaId, activityId: a.id),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Giorni della settimana e premio finale: pannello richiudibile, così
+/// l'editor resta compatto per chi non usa queste opzioni.
+class _DaysAndRewardPanel extends ConsumerWidget {
+  const _DaysAndRewardPanel({required this.agenda});
+
+  final Agenda agenda;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final lang = Localizations.localeOf(context).languageCode;
+    final days = ScheduleHint.fromJsonString(agenda.scheduleHint).weekdays;
+    final rewardId = agenda.rewardActivityId;
+    final reward = rewardId == null
+        ? null
+        : ref.watch(activityProvider(rewardId)).valueOrNull;
+
+    final summary = [
+      if (days.isNotEmpty) weekdaysSummary(lang, days),
+      if (reward != null) '★ ${reward.label}',
+    ].join('  ·  ');
+
+    return ExpansionTile(
+      dense: true,
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      leading: const Icon(Icons.event_repeat),
+      title: Text('${l10n.builderDays} · ${l10n.builderReward}'),
+      subtitle: summary.isEmpty ? null : Text(summary),
+      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          children: [
+            for (final d in weekdaysMonFirst)
+              FilterChip(
+                label: Text(shortWeekday(lang, d)),
+                showCheckmark: false,
+                visualDensity: VisualDensity.compact,
+                selected: days.contains(d),
+                onSelected: (on) => ref.read(agendaRepoProvider).setWeekdays(
+                      agenda.id,
+                      on ? ({...days, d}) : (days.difference({d})),
+                    ),
+              ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 8),
+          child: Text(l10n.builderDaysHelp,
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: reward == null
+              ? const Icon(Icons.emoji_events_outlined, size: 40)
+              : PictogramThumb(
+                  type: reward.pictogramType,
+                  pictogramRef: reward.pictogramRef,
+                ),
+          title: Text(reward == null
+              ? l10n.builderReward
+              : '${l10n.builderReward}: ${reward.label}'),
+          subtitle: Text(reward == null
+              ? l10n.builderRewardNone
+              : l10n.builderRewardHelp),
+          onTap: () => reward == null
+              ? _pickReward(context, ref)
+              : _rewardOptions(context, ref, reward),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickReward(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final activities = ref.read(activityRepoProvider);
+    final agendas = ref.read(agendaRepoProvider);
+    final selection = await showPictogramPicker(context);
+    if (selection == null || !context.mounted) return;
+
+    final controller = TextEditingController(text: selection.suggestedLabel);
+    final label = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.builderRewardName),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          onSubmitted: (v) => Navigator.pop(dialogContext, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, controller.text.trim()),
+            child: Text(l10n.builderSave),
+          ),
+        ],
+      ),
+    );
+    if (label == null || label.isEmpty) return;
+
+    final activityId = await activities.create(
+      label: label,
+      type: selection.type,
+      pictogramRef: selection.ref,
+    );
+    await agendas.setReward(agenda.id, activityId);
+  }
+
+  Future<void> _rewardOptions(
+      BuildContext context, WidgetRef ref, Activity reward) async {
+    final l10n = AppLocalizations.of(context)!;
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.swap_horiz),
+              title: Text(l10n.builderRewardChange),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickReward(context, ref);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                  reward.audioAssetId != null ? Icons.mic : Icons.mic_none),
+              title: Text(l10n.builderVoice),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                editActivityVoice(context, ref, reward);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete_outline,
+                  color: Theme.of(context).colorScheme.error),
+              title: Text(l10n.builderRewardRemove,
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.error)),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                ref.read(agendaRepoProvider).setReward(agenda.id, null);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

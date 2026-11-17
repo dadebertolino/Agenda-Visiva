@@ -34,4 +34,15 @@ class TtsService {
       // TTS non disponibile: silenzio, nessun crash.
     }
   }
+
+  /// Da chiamare dopo una registrazione: su iOS il registratore lascia la
+  /// sessione audio in playAndRecord (auricolare); al prossimo speak la
+  /// categoria playback viene reimpostata.
+  void invalidateAudioSession() => _configuredLocale = null;
+
+  Future<void> stop() async {
+    try {
+      await _tts.stop();
+    } catch (_) {}
+  }
 }

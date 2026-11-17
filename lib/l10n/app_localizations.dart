@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeSharePhotosWarning.
   ///
   /// In it, this message translates to:
-  /// **'Se contiene foto, condividi solo con persone fidate'**
+  /// **'Se contiene foto o voci registrate, condividi solo con persone fidate'**
   String get homeSharePhotosWarning;
 
   /// No description provided for @homeDeleteAgenda.
@@ -959,7 +959,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPrivacyBody.
   ///
   /// In it, this message translates to:
-  /// **'Agenda Visiva funziona completamente offline.\n\nNomi, foto e agende non lasciano mai questo dispositivo: nessun account, nessun server, nessun tracciamento, nessuna pubblicità.\n\nLe foto importate vengono ridimensionate e ripulite dai metadati (inclusa la posizione GPS).\n\nLa condivisione di un\'agenda (.agviz o PDF) avviene solo quando la avvii tu, con gli strumenti del tuo dispositivo. I file .agviz non contengono mai il nome del bambino.'**
+  /// **'Agenda Visiva funziona completamente offline.\n\nNomi, foto e agende non lasciano mai questo dispositivo: nessun account, nessun server, nessun tracciamento, nessuna pubblicità.\n\nLe foto importate vengono ridimensionate e ripulite dai metadati (inclusa la posizione GPS). Anche le voci registrate restano solo qui.\n\nLa condivisione di un\'agenda (.agviz o PDF) avviene solo quando la avvii tu, con gli strumenti del tuo dispositivo. I file .agviz non contengono mai il nome del bambino.'**
   String get settingsPrivacyBody;
 
   /// No description provided for @settingsCredits.
@@ -1033,6 +1033,174 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Versione'**
   String get settingsVersion;
+
+  /// No description provided for @builderVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce registrata'**
+  String get builderVoice;
+
+  /// No description provided for @builderVoiceSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Vale per questa attività in tutte le agende'**
+  String get builderVoiceSubtitle;
+
+  /// No description provided for @builderHasVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'voce registrata'**
+  String get builderHasVoice;
+
+  /// No description provided for @builderDays.
+  ///
+  /// In it, this message translates to:
+  /// **'Giorni'**
+  String get builderDays;
+
+  /// No description provided for @builderDaysHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun giorno = sempre disponibile. Con i giorni, l\'agenda compare in \"Oggi\".'**
+  String get builderDaysHelp;
+
+  /// No description provided for @builderReward.
+  ///
+  /// In it, this message translates to:
+  /// **'Premio finale'**
+  String get builderReward;
+
+  /// No description provided for @builderRewardNone.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuno: tocca per sceglierne uno'**
+  String get builderRewardNone;
+
+  /// No description provided for @builderRewardHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Un gettone per ogni attività completata, poi il premio'**
+  String get builderRewardHelp;
+
+  /// No description provided for @builderRewardName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome del premio'**
+  String get builderRewardName;
+
+  /// No description provided for @builderRewardChange.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia premio'**
+  String get builderRewardChange;
+
+  /// No description provided for @builderRewardRemove.
+  ///
+  /// In it, this message translates to:
+  /// **'Togli il premio'**
+  String get builderRewardRemove;
+
+  /// No description provided for @voiceTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra la tua voce'**
+  String get voiceTitle;
+
+  /// No description provided for @voiceHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca il microfono e di\' la parola o la frase. Massimo {seconds} secondi.'**
+  String voiceHint(int seconds);
+
+  /// No description provided for @voiceRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Sto registrando… {seconds} s'**
+  String voiceRecording(int seconds);
+
+  /// No description provided for @voiceRecord.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra'**
+  String get voiceRecord;
+
+  /// No description provided for @voiceStop.
+  ///
+  /// In it, this message translates to:
+  /// **'Ferma'**
+  String get voiceStop;
+
+  /// No description provided for @voiceListen.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta'**
+  String get voiceListen;
+
+  /// No description provided for @voiceRedo.
+  ///
+  /// In it, this message translates to:
+  /// **'Rifai'**
+  String get voiceRedo;
+
+  /// No description provided for @voiceSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get voiceSave;
+
+  /// No description provided for @voiceCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get voiceCancel;
+
+  /// No description provided for @voiceDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina la registrazione'**
+  String get voiceDelete;
+
+  /// No description provided for @voicePermissionDenied.
+  ///
+  /// In it, this message translates to:
+  /// **'Serve l\'accesso al microfono: puoi consentirlo dalle impostazioni del dispositivo.'**
+  String get voicePermissionDenied;
+
+  /// No description provided for @voiceUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Microfono non disponibile su questo dispositivo'**
+  String get voiceUnavailable;
+
+  /// No description provided for @voicePrivacy.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione resta su questo dispositivo. Viaggia solo se condividi l\'agenda come file .agviz.'**
+  String get voicePrivacy;
+
+  /// No description provided for @needsBoardVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra la voce'**
+  String get needsBoardVoice;
+
+  /// No description provided for @homeToday.
+  ///
+  /// In it, this message translates to:
+  /// **'Oggi, {day}'**
+  String homeToday(String day);
+
+  /// No description provided for @playerTokens.
+  ///
+  /// In it, this message translates to:
+  /// **'Gettoni: {done} su {total}'**
+  String playerTokens(int done, int total);
+
+  /// No description provided for @playerRewardEarned.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai guadagnato:'**
+  String get playerRewardEarned;
 }
 
 class _AppLocalizationsDelegate

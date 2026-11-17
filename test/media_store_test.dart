@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:agenda_visiva/data/db/database.dart';
 import 'package:agenda_visiva/data/services/media_store.dart';
 import 'package:drift/native.dart';
+import 'package:image/image.dart' as img;
 import 'package:flutter_test/flutter_test.dart';
 
 /// PNG 1x1 trasparente valido.
@@ -54,5 +55,19 @@ void main() {
     final file = await store.fileFor(asset.id);
     expect(file!.existsSync(), isTrue);
     expect(await store.fileFor('inesistente'), isNull);
+  });
+
+  test('fallback Dart puro: niente EXIF/GPS, lato corto ridotto a 1024',
+      () {
+    final photo = img.Image(width: 3000, height: 2000);
+    photo.exif.imageIfd['Model'] = img.IfdValueAscii('Telefono');
+    photo.exif.gpsIfd['GPSLatitudeRef'] = img.IfdValueAscii('N');
+    final withGps = img.encodeJpg(photo);
+    expect(img.decodeJpg(withGps)!.exif.gpsIfd.isEmpty, isFalse);
+
+    final out = img.decodeJpg(stripAndResizeJpeg(withGps))!;
+    expect(out.exif.gpsIfd.isEmpty, isTrue);
+    expect(out.exif.imageIfd.isEmpty, isTrue);
+    expect((out.width, out.height), (1536, 1024));
   });
 }

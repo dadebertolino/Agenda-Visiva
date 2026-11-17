@@ -22,7 +22,10 @@ Le agende visive (TEACCH, CAA) riducono l'ansia da transizione e aumentano l'aut
 
 ## Funzionalità
 
-- **Editor agenda** drag & drop: tre tipi (Giornata, Adesso–Dopo, Sequenza), riuso rapido delle attività recenti; per ogni attività: timer visivo (fino a 60 min), orario di inizio e fine, luogo e persona ("dove e con chi") — tutto opzionale, dal menu ⋮
+- **Editor agenda** drag & drop: tre tipi (Giornata, Adesso–Dopo, Sequenza), riuso rapido delle attività recenti; per ogni attività: timer visivo (fino a 60 min), orario di inizio e fine, luogo e persona ("dove e con chi"), voce registrata — tutto opzionale, dal menu ⋮
+- **Agenda per giorno della settimana**: ogni agenda può essere associata a uno o più giorni; quelle di oggi compaiono in cima al profilo, pronte da avviare. All'avvio, le spunte rimaste da un giorno precedente si azzerano da sole
+- **Voce registrata**: l'adulto registra la parola o la frase (max 15 s) e il bambino sente quella voce al posto della sintesi vocale, nelle agende e nella tavola bisogni. La registrazione resta sul dispositivo; quella sostituita o rimossa viene cancellata
+- **Tabella gettoni**: con un premio finale impostato, ogni attività completata fa guadagnare un gettone; a fine agenda compare il premio
 - **Pittogrammi**: ricerca ARASAAC in italiano e inglese (cache offline), foto personali, set base incluso
 - **Modalità bambino**: full-screen, card grandi (dimensione regolabile), check-off con conferma verde, linea delle attività che si svuota man mano che si completa (o storico, a scelta), timer a barra che si riempie o ad anello, etichette "Adesso/Dopo", lettura vocale nella lingua attiva, schermata di rinforzo a fine agenda
 - **Tavola "I miei bisogni"**: griglia di comunicazione CAA — il bambino tocca l'immagine (Acqua, Bagno, Aiuto...), il dispositivo pronuncia la parola; modificabile dall'adulto, raggiungibile anche durante la routine
@@ -32,12 +35,12 @@ Le agende visive (TEACCH, CAA) riducono l'ansia da transizione e aumentano l'aut
 
 ## Piattaforme
 
-iOS e Android da un unico codebase Flutter, pubblicata su App Store e Google Play. L'interfaccia è disponibile in italiano e inglese. Nota Android: il permesso `INTERNET` in `AndroidManifest.xml` serve esclusivamente ai pittogrammi ARASAAC (unica comunicazione di rete dell'app).
+iOS e Android da un unico codebase Flutter, pubblicata su App Store e Google Play. Supporto macOS (Mac App Store, stessa scheda di iOS) e Windows (Microsoft Store): procedura in [docs/release-desktop.md](docs/release-desktop.md). L'interfaccia è disponibile in italiano e inglese. Nota Android: il permesso `INTERNET` in `AndroidManifest.xml` serve esclusivamente ai pittogrammi ARASAAC (unica comunicazione di rete dell'app). Il permesso microfono (`RECORD_AUDIO` / `NSMicrophoneUsageDescription`) è chiesto solo quando l'adulto registra una voce; l'audio è salvato in locale e non viene mai trasmesso.
 
 ## Setup sviluppo
 
 ```bash
-# Prerequisiti: Flutter stable >= 3.32 (allineato alla CI)
+# Prerequisiti: Flutter stable >= 3.47 (allineato alla CI)
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 dart run flutter_native_splash:create
@@ -50,7 +53,7 @@ Per iOS sviluppo: aprire `ios/Runner.xcworkspace` e impostare il team di firma. 
 
 ## Architettura
 
-Feature-first, offline-first, sync-ready (UUID client-side, tombstone, campo `dirty` su ogni tabella: la futura sync E2E non richiederà migrazioni). Database drift con migrazioni versionate (attuale: v3).
+Feature-first, offline-first, sync-ready (UUID client-side, tombstone, campo `dirty` su ogni tabella: la futura sync E2E non richiederà migrazioni). Database drift con migrazioni versionate (attuale: v4).
 
 ```
 lib/
@@ -58,9 +61,9 @@ lib/
   data/
     db/          drift (SQLite): tabelle, migrazioni
     repositories/  Profile, Agenda, Activity, Board — le feature dipendono da qui, mai da drift
-    services/    arasaac_api, media_store, pdf_export, agviz, tts
+    services/    arasaac_api, media_store, pdf_export, agviz, tts, voice_player
   domain/        modelli puri (ProfileSettings, ItemBadge, ...)
-  features/      profiles, builder, player, pictogram_picker, comunicazione, settings
+  features/      profiles, builder, player, pictogram_picker, comunicazione, settings, voice
 ```
 
 Stack: Riverpod 2, drift, pdf/printing, flutter_tts. Dettagli e razionali in `docs/`.
@@ -72,6 +75,7 @@ Stack: Riverpod 2, drift, pdf/printing, flutter_tts. Dettagli e razionali in `do
 - [x] v1.1: primo round di feedback dal pilota (orari, timer esteso, linea attività "cosa resta", Adesso/Dopo, PDF elenco giornata, dove/con chi)
 - [x] Pubblicazione su App Store e Google Play
 - [x] v1.2.1: onboarding, gate adulto, accessibilità, export `.agviz` completo, font Unicode PDF e interfaccia IT/EN
+- [x] v1.3.0: voce registrata, agenda per giorno della settimana, tabella gettoni; supporto macOS e Windows
 - [ ] Guida all'uso per insegnanti e famiglie
 - [ ] Ulteriori rifiniture di accessibilità e feedback dal pilota
 - [ ] Fase 2: sync casa-scuola con crittografia end-to-end (il server vedrà solo blob cifrati) — DPIA pubblica in questo repo

@@ -25,6 +25,19 @@ class ActivityRepo {
     return id;
   }
 
+  Stream<Activity?> watchById(String id) =>
+      (_db.select(_db.activities)..where((t) => t.id.equals(id)))
+          .watchSingleOrNull();
+
+  /// Voce registrata (null = torna alla sintesi vocale).
+  Future<void> setAudio(String activityId, String? audioAssetId) =>
+      (_db.update(_db.activities)..where((t) => t.id.equals(activityId)))
+          .write(ActivitiesCompanion(
+        audioAssetId: Value(audioAssetId),
+        updatedAt: Value(DateTime.now().toUtc()),
+        dirty: const Value(true),
+      )).then((_) {});
+
   /// Attività recenti per la striscia quick-add dell'editor.
   Stream<List<Activity>> watchRecent({int limit = 12}) =>
       (_db.select(_db.activities)

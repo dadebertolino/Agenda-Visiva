@@ -156,7 +156,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeSharePhotosWarning =>
-      'Se contiene foto, condividi solo con persone fidate';
+      'Se contiene foto o voci registrate, condividi solo con persone fidate';
 
   @override
   String get homeDeleteAgenda => 'Elimina';
@@ -494,7 +494,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsPrivacyBody =>
-      'Agenda Visiva funziona completamente offline.\n\nNomi, foto e agende non lasciano mai questo dispositivo: nessun account, nessun server, nessun tracciamento, nessuna pubblicità.\n\nLe foto importate vengono ridimensionate e ripulite dai metadati (inclusa la posizione GPS).\n\nLa condivisione di un\'agenda (.agviz o PDF) avviene solo quando la avvii tu, con gli strumenti del tuo dispositivo. I file .agviz non contengono mai il nome del bambino.';
+      'Agenda Visiva funziona completamente offline.\n\nNomi, foto e agende non lasciano mai questo dispositivo: nessun account, nessun server, nessun tracciamento, nessuna pubblicità.\n\nLe foto importate vengono ridimensionate e ripulite dai metadati (inclusa la posizione GPS). Anche le voci registrate restano solo qui.\n\nLa condivisione di un\'agenda (.agviz o PDF) avviene solo quando la avvii tu, con gli strumenti del tuo dispositivo. I file .agviz non contengono mai il nome del bambino.';
 
   @override
   String get settingsCredits => 'Crediti pittogrammi';
@@ -536,4 +536,102 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsVersion => 'Versione';
+
+  @override
+  String get builderVoice => 'Voce registrata';
+
+  @override
+  String get builderVoiceSubtitle =>
+      'Vale per questa attività in tutte le agende';
+
+  @override
+  String get builderHasVoice => 'voce registrata';
+
+  @override
+  String get builderDays => 'Giorni';
+
+  @override
+  String get builderDaysHelp =>
+      'Nessun giorno = sempre disponibile. Con i giorni, l\'agenda compare in \"Oggi\".';
+
+  @override
+  String get builderReward => 'Premio finale';
+
+  @override
+  String get builderRewardNone => 'Nessuno: tocca per sceglierne uno';
+
+  @override
+  String get builderRewardHelp =>
+      'Un gettone per ogni attività completata, poi il premio';
+
+  @override
+  String get builderRewardName => 'Nome del premio';
+
+  @override
+  String get builderRewardChange => 'Cambia premio';
+
+  @override
+  String get builderRewardRemove => 'Togli il premio';
+
+  @override
+  String get voiceTitle => 'Registra la tua voce';
+
+  @override
+  String voiceHint(int seconds) {
+    return 'Tocca il microfono e di\' la parola o la frase. Massimo $seconds secondi.';
+  }
+
+  @override
+  String voiceRecording(int seconds) {
+    return 'Sto registrando… $seconds s';
+  }
+
+  @override
+  String get voiceRecord => 'Registra';
+
+  @override
+  String get voiceStop => 'Ferma';
+
+  @override
+  String get voiceListen => 'Ascolta';
+
+  @override
+  String get voiceRedo => 'Rifai';
+
+  @override
+  String get voiceSave => 'Salva';
+
+  @override
+  String get voiceCancel => 'Annulla';
+
+  @override
+  String get voiceDelete => 'Elimina la registrazione';
+
+  @override
+  String get voicePermissionDenied =>
+      'Serve l\'accesso al microfono: puoi consentirlo dalle impostazioni del dispositivo.';
+
+  @override
+  String get voiceUnavailable =>
+      'Microfono non disponibile su questo dispositivo';
+
+  @override
+  String get voicePrivacy =>
+      'La registrazione resta su questo dispositivo. Viaggia solo se condividi l\'agenda come file .agviz.';
+
+  @override
+  String get needsBoardVoice => 'Registra la voce';
+
+  @override
+  String homeToday(String day) {
+    return 'Oggi, $day';
+  }
+
+  @override
+  String playerTokens(int done, int total) {
+    return 'Gettoni: $done su $total';
+  }
+
+  @override
+  String get playerRewardEarned => 'Hai guadagnato:';
 }

@@ -13,6 +13,10 @@ import '../db/tables.dart';
 /// - le foto referenziate sono incluse (avvisare l'utente alla condivisione)
 /// - gli ID originali sono preservati -> re-import = aggiornamento in place
 /// - isCompleted NON viaggia: lo stato runtime riparte pulito
+/// - voci registrate e premio (v4 del DB) sono campi opzionali: un'app
+///   precedente li ignora, quindi lo schemaVersion del file resta 2
+/// - un import non cancella mai una voce o un premio già presenti: un
+///   valore null in arrivo lascia intatto quello locale
 class AgvizService {
   AgvizService(this._db, this._docsDir);
 
@@ -30,20 +34,25 @@ class AgvizService {
               t.agendaId.equals(agendaId) & t.deletedAt.isNull())
           ..orderBy([(t) => OrderingTerm.asc(t.position)]))
         .get();
-    final activityIds = items.map((i) => i.activityId).toSet().toList();
+    final activityIds = {
+      ...items.map((i) => i.activityId),
+      if (agenda.rewardActivityId != null) agenda.rewardActivityId!,
+    }.toList();
     final activities = activityIds.isEmpty
         ? <Activity>[]
         : await (_db.select(_db.activities)
               ..where((t) => t.id.isIn(activityIds)))
             .get();
-    final photoIds = activities
-        .where((a) => a.pictogramType == PictogramType.photo)
-        .map((a) => a.pictogramRef)
-        .toList();
-    final mediaRows = photoIds.isEmpty
+    final mediaIds = [
+      for (final a in activities) ...[
+        if (a.pictogramType == PictogramType.photo) a.pictogramRef,
+        if (a.audioAssetId != null) a.audioAssetId!,
+      ],
+    ];
+    final mediaRows = mediaIds.isEmpty
         ? <MediaAsset>[]
         : await (_db.select(_db.mediaAssets)
-              ..where((t) => t.id.isIn(photoIds)))
+              ..where((t) => t.id.isIn(mediaIds) & t.deletedAt.isNull()))
             .get();
 
     final data = {
@@ -53,6 +62,7 @@ class AgvizService {
         'type': agenda.type.name,
         'scheduleHint': agenda.scheduleHint,
         'sortOrder': agenda.sortOrder,
+        'rewardActivityId': agenda.rewardActivityId,
       },
       'items': [
         for (final i in items)
@@ -76,6 +86,7 @@ class AgvizService {
             'pictogramRef': a.pictogramRef,
             'ttsText': a.ttsText,
             'color': a.color,
+            'audioAssetId': a.audioAssetId,
           }
       ],
       'media': [
@@ -86,6 +97,7 @@ class AgvizService {
             'width': m.width,
             'height': m.height,
             'sha256': m.sha256,
+            'ext': _extOf(m),
           }
       ],
     };
@@ -105,7 +117,8 @@ class AgvizService {
       final file = File('${_docsDir.path}/${m.filePath}');
       if (await file.exists()) {
         final bytes = await file.readAsBytes();
-        archive.addFile(ArchiveFile('media/${m.id}.jpg', bytes.length, bytes));
+        archive.addFile(
+            ArchiveFile('media/${m.id}.${_extOf(m)}', bytes.length, bytes));
       }
     }
 
@@ -154,8 +167,12 @@ class AgvizService {
       for (final raw in (data['media'] as List? ?? const [])) {
         final m = raw as Map<String, dynamic>;
         final id = m['id'] as String;
-        final entry = find('media/$id.jpg');
-        final relativePath = 'media/$id.jpg';
+        // Il path su disco lo costruiamo noi da id ed estensione validati:
+        // un file manomesso non può scrivere fuori da media/.
+        if (!_safeId.hasMatch(id)) continue;
+        final ext = m['ext'] == 'm4a' ? 'm4a' : 'jpg';
+        final relativePath = 'media/$id.$ext';
+        final entry = find(relativePath);
         if (entry != null) {
           final out = File('${_docsDir.path}/$relativePath');
           await out.create(recursive: true);
@@ -165,7 +182,9 @@ class AgvizService {
               MediaAssetsCompanion.insert(
                 id: id,
                 filePath: relativePath,
-                mimeType: m['mimeType'] as String? ?? 'image/jpeg',
+                mimeType: ext == 'm4a'
+                    ? 'audio/mp4'
+                    : (m['mimeType'] as String? ?? 'image/jpeg'),
                 width: (m['width'] as num?)?.toInt() ?? 0,
                 height: (m['height'] as num?)?.toInt() ?? 0,
                 sha256: m['sha256'] as String? ?? '',
@@ -184,6 +203,7 @@ class AgvizService {
                 pictogramRef: a['pictogramRef'] as String,
                 ttsText: Value(a['ttsText'] as String?),
                 color: Value(a['color'] as String?),
+                audioAssetId: _keepLocalIfNull(a['audioAssetId']),
               ),
             );
       }
@@ -196,6 +216,8 @@ class AgvizService {
               type: AgendaType.values.byName(agendaMap['type'] as String),
               scheduleHint: Value(agendaMap['scheduleHint'] as String?),
               sortOrder: Value((agendaMap['sortOrder'] as num?)?.toInt() ?? 0),
+              rewardActivityId:
+                  _keepLocalIfNull(agendaMap['rewardActivityId']),
             ),
           );
 
@@ -220,6 +242,15 @@ class AgvizService {
     return agendaId;
   }
 }
+
+/// Id generati dall'app (UUID): niente separatori di path.
+final _safeId = RegExp(r'^[A-Za-z0-9_-]{1,64}$');
+
+String _extOf(MediaAsset m) => m.filePath.endsWith('.m4a') ? 'm4a' : 'jpg';
+
+/// null o assente = non toccare il valore locale (Value.absent nell'upsert).
+Value<String?> _keepLocalIfNull(Object? raw) =>
+    raw is String ? Value(raw) : const Value.absent();
 
 class AgvizException implements Exception {
   AgvizException(this.message);
