@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
@@ -31,14 +34,17 @@ class MediaStore {
   final ImagePicker _picker;
 
   /// keepExif: false = strip metadata (posizione GPS inclusa).
+  /// Su Windows il plugin nativo non esiste: stessa garanzia in Dart puro.
   static Future<Uint8List> _defaultCompress(Uint8List input) =>
-      FlutterImageCompress.compressWithList(
-        input,
-        minWidth: 1024,
-        minHeight: 1024,
-        quality: 85,
-        keepExif: false,
-      );
+      Platform.isWindows
+          ? Isolate.run(() => stripAndResizeJpeg(input))
+          : FlutterImageCompress.compressWithList(
+              input,
+              minWidth: 1024,
+              minHeight: 1024,
+              quality: 85,
+              keepExif: false,
+            );
 
   /// Da galleria o fotocamera. Ritorna null se l'utente annulla.
   Future<MediaAsset?> importFrom(ImageSource source) async {
@@ -152,4 +158,26 @@ class MediaStore {
       return (0, 0);
     }
   }
+}
+
+/// Ricodifica JPEG senza alcun metadato (EXIF/GPS), orientamento applicato
+/// ai pixel, lato corto ridotto a 1024 px come flutter_image_compress
+/// (minWidth/minHeight 1024). Pura Dart: usata dove manca il plugin.
+Uint8List stripAndResizeJpeg(Uint8List input) {
+  final decoded = img.decodeImage(input);
+  if (decoded == null) {
+    throw const FormatException('Immagine non leggibile');
+  }
+  var image = img.bakeOrientation(decoded);
+  final scale = math.min(image.width / 1024, image.height / 1024);
+  if (scale > 1) {
+    image = img.copyResize(
+      image,
+      width: (image.width / scale).round(),
+      height: (image.height / scale).round(),
+      interpolation: img.Interpolation.average,
+    );
+  }
+  image.exif = img.ExifData();
+  return img.encodeJpg(image, quality: 85);
 }

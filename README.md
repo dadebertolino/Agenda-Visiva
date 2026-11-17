@@ -35,7 +35,7 @@ Le agende visive (TEACCH, CAA) riducono l'ansia da transizione e aumentano l'aut
 
 ## Piattaforme
 
-iOS e Android da un unico codebase Flutter, pubblicata su App Store e Google Play. L'interfaccia è disponibile in italiano e inglese. Nota Android: il permesso `INTERNET` in `AndroidManifest.xml` serve esclusivamente ai pittogrammi ARASAAC (unica comunicazione di rete dell'app). Il permesso microfono (`RECORD_AUDIO` / `NSMicrophoneUsageDescription`) è chiesto solo quando l'adulto registra una voce; l'audio è salvato in locale e non viene mai trasmesso.
+iOS e Android da un unico codebase Flutter, pubblicata su App Store e Google Play. Supporto macOS (Mac App Store, stessa scheda di iOS) e Windows (Microsoft Store): procedura in [docs/release-desktop.md](docs/release-desktop.md). L'interfaccia è disponibile in italiano e inglese. Nota Android: il permesso `INTERNET` in `AndroidManifest.xml` serve esclusivamente ai pittogrammi ARASAAC (unica comunicazione di rete dell'app). Il permesso microfono (`RECORD_AUDIO` / `NSMicrophoneUsageDescription`) è chiesto solo quando l'adulto registra una voce; l'audio è salvato in locale e non viene mai trasmesso.
 
 ## Setup sviluppo
 

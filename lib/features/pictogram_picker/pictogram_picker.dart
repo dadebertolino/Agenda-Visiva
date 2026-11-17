@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/builtin_icons.dart';
 import '../../core/constants.dart';
+import '../../core/platform_info.dart';
 import '../../core/providers.dart';
 import '../../data/db/tables.dart';
 import '../../data/services/arasaac_api.dart';
@@ -277,13 +278,16 @@ class _PhotoTab extends ConsumerWidget {
             label: Text(l10n.pickerGallery),
             onPressed: () => _import(context, ref, ImageSource.gallery),
           ),
-          const SizedBox(height: 16),
-          FilledButton.tonalIcon(
-            style: FilledButton.styleFrom(minimumSize: const Size(0, 64)),
-            icon: const Icon(Icons.photo_camera),
-            label: Text(l10n.pickerCamera),
-            onPressed: () => _import(context, ref, ImageSource.camera),
-          ),
+          // image_picker non gestisce la fotocamera su desktop.
+          if (!isDesktop) ...[
+            const SizedBox(height: 16),
+            FilledButton.tonalIcon(
+              style: FilledButton.styleFrom(minimumSize: const Size(0, 64)),
+              icon: const Icon(Icons.photo_camera),
+              label: Text(l10n.pickerCamera),
+              onPressed: () => _import(context, ref, ImageSource.camera),
+            ),
+          ],
           const SizedBox(height: 24),
           Text(
             l10n.pickerPhotoPrivacy,
