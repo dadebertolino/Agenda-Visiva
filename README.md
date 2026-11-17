@@ -75,7 +75,7 @@ Stack: Riverpod 2, drift, pdf/printing, flutter_tts. Dettagli e razionali in `do
 - [x] v1.1: primo round di feedback dal pilota (orari, timer esteso, linea attività "cosa resta", Adesso/Dopo, PDF elenco giornata, dove/con chi)
 - [x] Pubblicazione su App Store e Google Play
 - [x] v1.2.1: onboarding, gate adulto, accessibilità, export `.agviz` completo, font Unicode PDF e interfaccia IT/EN
-- [x] Agenda per giorno della settimana, voce registrata, tabella gettoni
+- [x] v1.3.0: voce registrata, agenda per giorno della settimana, tabella gettoni; supporto macOS e Windows
 - [ ] Guida all'uso per insegnanti e famiglie
 - [ ] Ulteriori rifiniture di accessibilità e feedback dal pilota
 - [ ] Fase 2: sync casa-scuola con crittografia end-to-end (il server vedrà solo blob cifrati) — DPIA pubblica in questo repo
