@@ -50,4 +50,8 @@ jobs:
       - run: dart run build_runner build --delete-conflicting-outputs
       # Solo verifica di compilazione: la build per il Mac App Store si
       # archivia e firma da Xcode (Product → Archive).
+      # Il progetto firma con il team dello sviluppatore, che sul runner
+      # non c'è: in CI la firma è disattivata (verifica di compilazione).
       - run: flutter build macos --debug
+        env:
+          FLUTTER_XCODE_CODE_SIGNING_ALLOWED: "NO"
